@@ -36,7 +36,6 @@ expr
     |   LPAREN e=expr RPAREN                                        # paren
     |   ID                                                          # id
     |   INT                                                         # int
-    |   FLOAT                                                       # float
     |   BOOL                                                        # bool
     |   STRING                                                      # string
     ;

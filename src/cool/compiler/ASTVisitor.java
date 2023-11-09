@@ -4,7 +4,6 @@ public interface ASTVisitor<T> {
 	T visit(Id id);
 	T visit(Int intt);
 	T visit(If iff);
-	T visit(Float floatt);
 	T visit(Bool bool);
 	T visit(Stringg string);
 	T visit(Call call);

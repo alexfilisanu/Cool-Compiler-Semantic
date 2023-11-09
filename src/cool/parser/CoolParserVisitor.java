@@ -87,13 +87,6 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhile(CoolParser.WhileContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code float}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFloat(CoolParser.FloatContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code int}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree

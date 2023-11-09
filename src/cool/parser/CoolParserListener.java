@@ -136,18 +136,6 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitWhile(CoolParser.WhileContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code float}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterFloat(CoolParser.FloatContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code float}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitFloat(CoolParser.FloatContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code int}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree

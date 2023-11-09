@@ -39,19 +39,17 @@ fragment LOWERCASE : [a-z];
 fragment UPPERCASE : [A-Z];
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
-fragment DIGITS : DIGIT+;
-fragment EXPONENT : 'e' ('+' | '-')? DIGITS;
 
-TYPE : 'Int' | 'Float' | 'Bool' | 'String' | 'Object' | SELF_TYPE;
+TYPE : 'Int' | 'Bool' | 'String' | 'Object' | SELF_TYPE;
 ID : (LETTER | '_')(LETTER | '_' | DIGIT)*;
 
 INT : DIGIT+;
-FLOAT : (DIGITS ('.' DIGITS?)? | '.' DIGITS) EXPONENT?;
 BOOL : 'true' | 'false';
 STRING : QUOTATION ('\\"' | .)*? QUOTATION;
 
 SEMI : ';';
 COMMA : ',';
+DOT : '.';
 COLON : ':';
 QUOTATION : '"';
 ASSIGN : '<-';
@@ -59,6 +57,7 @@ LPAREN : '(';
 RPAREN : ')';
 LBRACE : '{';
 RBRACE : '}';
+AT_SIGN : '@';
 TILDE : '~';
 PLUS : '+';
 MINUS : '-';

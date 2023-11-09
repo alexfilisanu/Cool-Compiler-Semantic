@@ -141,13 +141,8 @@ public class Compiler {
                 }
 
                 @Override
-                public ASTNode visitFloat(CoolParser.FloatContext ctx) {
-                    return new Float(ctx.FLOAT().getSymbol());
-                }
-
-                @Override
                 public ASTNode visitBool(CoolParser.BoolContext ctx) {
-                    return new Float(ctx.BOOL().getSymbol());
+                    return new Bool(ctx.BOOL().getSymbol());
                 }
 
                 @Override
@@ -285,12 +280,6 @@ public class Compiler {
                     iff.thenBranch.accept(this);
                     iff.elseBranch.accept(this);
                     indent--;
-                    return null;
-                }
-
-                @Override
-                public Void visit(Float floatt) {
-                    printIndent(floatt.token.getText());
                     return null;
                 }
 
