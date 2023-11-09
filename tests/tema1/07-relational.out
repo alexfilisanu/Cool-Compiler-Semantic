@@ -1,0 +1,3 @@
+"07-relational.cl", line 2:5, Syntax error: mismatched input 'n' expecting {TYPE, '}'}
+"07-relational.cl", line 3:5, Syntax error: extraneous input 'b' expecting {<EOF>, 'class'}
+Compilation halted

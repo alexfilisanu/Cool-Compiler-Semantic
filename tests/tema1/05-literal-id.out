@@ -1,0 +1,18 @@
+program
+  class
+    A
+    attribute
+      n
+      Int
+      0
+    attribute
+      s
+      String
+    attribute
+      b
+      Bool
+      FLOAT false
+    attribute
+      c
+      Bool
+      ID b

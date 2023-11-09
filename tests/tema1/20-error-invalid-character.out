@@ -1,0 +1,4 @@
+"20-error-invalid-character.cl", line 2:5, Syntax error: mismatched input 'x' expecting {TYPE, '}'}
+line 2:13 token recognition error at: '#'
+"20-error-invalid-character.cl", line 3:1, Syntax error: extraneous input '}' expecting {<EOF>, 'class'}
+Compilation halted

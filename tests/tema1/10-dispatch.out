@@ -1,0 +1,7 @@
+"10-dispatch.cl", line 2:5, Syntax error: mismatched input 'f' expecting {TYPE, '}'}
+"10-dispatch.cl", line 6:5, Syntax error: extraneous input 'g' expecting {<EOF>, 'class'}
+line 7:12 token recognition error at: '.g'
+line 11:13 token recognition error at: '@'
+line 11:15 token recognition error at: '.h'
+line 11:24 token recognition error at: '.h'
+Compilation halted

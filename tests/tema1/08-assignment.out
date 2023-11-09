@@ -1,0 +1,3 @@
+"08-assignment.cl", line 2:5, Syntax error: mismatched input 'x' expecting {TYPE, '}'}
+"08-assignment.cl", line 4:5, Syntax error: extraneous input 'f' expecting {<EOF>, 'class'}
+Compilation halted
