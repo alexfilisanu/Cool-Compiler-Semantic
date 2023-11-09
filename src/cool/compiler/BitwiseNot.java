@@ -5,9 +5,9 @@ import org.antlr.v4.runtime.Token;
 public class BitwiseNot extends Expression {
 	Expression e;
 
-	BitwiseNot(Expression e,
-			   Token start) {
-		super(start);
+	BitwiseNot(Token token,
+			Expression e) {
+		super(token);
 		this.e = e;
 	}
 

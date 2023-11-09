@@ -30,9 +30,10 @@ NEW : 'new';
 CLASS : 'class';
 INHERITS : 'inherits';
 
-fragment SELF_TYPE : 'SELF_TYPE';
+NOT : 'not';
+IS_VOID : 'isvoid';
 
-TYPE : 'Int' | 'Float' | 'Bool' | 'String' | SELF_TYPE;
+fragment SELF_TYPE : 'SELF_TYPE';
 
 fragment LOWERCASE : [a-z];
 fragment UPPERCASE : [A-Z];
@@ -41,16 +42,18 @@ fragment DIGIT : [0-9];
 fragment DIGITS : DIGIT+;
 fragment EXPONENT : 'e' ('+' | '-')? DIGITS;
 
+TYPE : 'Int' | 'Float' | 'Bool' | 'String' | 'Object' | SELF_TYPE;
+ID : (LETTER | '_')(LETTER | '_' | DIGIT)*;
+
 INT : DIGIT+;
 FLOAT : (DIGITS ('.' DIGITS?)? | '.' DIGITS) EXPONENT?;
 BOOL : 'true' | 'false';
-STRING : '"' ('\\"' | .)*? '"';
-
-ID : (LETTER | '_')(LETTER | '_' | DIGIT)*;
+STRING : QUOTATION ('\\"' | .)*? QUOTATION;
 
 SEMI : ';';
 COMMA : ',';
 COLON : ':';
+QUOTATION : '"';
 ASSIGN : '<-';
 LPAREN : '(';
 RPAREN : ')';

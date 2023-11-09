@@ -1,9 +1,9 @@
 package cool.compiler;
 
+import cool.lexer.CoolLexer;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-import cool.lexer.*;
 import cool.parser.*;
 
 import java.io.*;
@@ -150,6 +150,10 @@ public class Compiler {
                     return new Float(ctx.BOOL().getSymbol());
                 }
 
+                @Override
+                public ASTNode visitString(CoolParser.StringContext ctx) {
+                    return new Stringg(ctx.STRING().getSymbol());
+                }
 
                 @Override
                 public ASTNode visitCall(CoolParser.CallContext ctx) {
@@ -159,8 +163,14 @@ public class Compiler {
 
                 @Override
                 public ASTNode visitBitwiseNot(CoolParser.BitwiseNotContext ctx) {
-                    return new BitwiseNot((Expression)visit(ctx.e),
-                            ctx.start);
+                    return new BitwiseNot(ctx.TILDE().getSymbol(),
+                            (Expression)visit(ctx.e));
+                }
+
+                @Override
+                public ASTNode visitNot(CoolParser.NotContext ctx) {
+                    return new BitwiseNot(ctx.NOT().getSymbol(),
+                            (Expression)visit(ctx.e));
                 }
 
                 @Override
@@ -186,7 +196,8 @@ public class Compiler {
 
                 @Override
                 public ASTNode visitAssign(CoolParser.AssignContext ctx) {
-                    return new Assign(ctx.name,
+                    return new Assign(ctx.ASSIGN().getSymbol(),
+                            ctx.name,
                             (Expression)visit(ctx.value));
                 }
 
@@ -206,13 +217,47 @@ public class Compiler {
                 @Override
                 public ASTNode visitVarDef(CoolParser.VarDefContext ctx) {
                     return ctx.init != null
-                            ? new VarDef(ctx.declare().name,
-                                ctx.declare().type,
+                            ? new VarDef(ctx.name,
+                                ctx.type,
                                 (Expression) visit(ctx.init),
                                 ctx.start)
-                            : new VarDef(ctx.declare().name,
-                                ctx.declare().type,
+                            : new VarDef(ctx.name,
+                                ctx.type,
                                 ctx.start);
+                }
+
+                @Override
+                public ASTNode visitFuncDef(CoolParser.FuncDefContext ctx) {
+                    return new FuncDef(ctx.name,
+                            ctx.type,
+                            ctx.formals.stream().map(x -> (Formal) visit(x)).collect(Collectors.toList()),
+                            (Expression)visit(ctx.body),
+                            ctx.start);
+                }
+
+                @Override
+                public ASTNode visitFormal(CoolParser.FormalContext ctx) {
+                    return new Formal(ctx.name,
+                            ctx.type,
+                            ctx.start);
+                }
+
+                @Override
+                public ASTNode visitParen(CoolParser.ParenContext ctx) {
+                    return new Paren((Expression)visit(ctx.e),
+                            ctx.start);
+                }
+
+                @Override
+                public ASTNode visitIsvoid(CoolParser.IsvoidContext ctx) {
+                    return new IsVoid(ctx.IS_VOID().getSymbol(),
+                            (Expression)visit(ctx.e));
+                }
+
+                @Override
+                public ASTNode visitNew(CoolParser.NewContext ctx) {
+                    return new New(ctx.NEW().getSymbol(),
+                            ctx.name);
                 }
             };
             // TODO Print tree
@@ -222,7 +267,7 @@ public class Compiler {
 
                 @Override
                 public Void visit(Id id) {
-                    printIndent("ID " + id.token.getText());
+                    printIndent(id.token.getText());
                     return null;
                 }
 
@@ -245,13 +290,20 @@ public class Compiler {
 
                 @Override
                 public Void visit(Float floatt) {
-                    printIndent("FLOAT " + floatt.token.getText());
+                    printIndent(floatt.token.getText());
                     return null;
                 }
 
                 @Override
                 public Void visit(Bool bool) {
-                    printIndent("BOOL " + bool.token.getText());
+                    printIndent(bool.token.getText());
+                    return null;
+                }
+
+                @Override
+                public Void visit(Stringg stringg) {
+                    var len = stringg.token.getText().length() - 1;
+                    printIndent(stringg.token.getText().substring(1, len));
                     return null;
                 }
 
@@ -266,7 +318,7 @@ public class Compiler {
 
                 @Override
                 public Void visit(BitwiseNot bitwiseNot) {
-                    printIndent("BITWISE_NOT");
+                    printIndent(bitwiseNot.token.getText());
                     indent++;
                     bitwiseNot.e.accept(this);
                     indent--;
@@ -274,8 +326,17 @@ public class Compiler {
                 }
 
                 @Override
+                public Void visit(Not not) {
+                    printIndent(not.token.getText());
+                    indent++;
+                    not.e.accept(this);
+                    indent--;
+                    return null;
+                }
+
+                @Override
                 public Void visit(MultDiv multDiv) {
-                    printIndent("MULT_DIV " + multDiv.token.getText());
+                    printIndent(multDiv.token.getText());
                     indent++;
                     multDiv.left.accept(this);
                     multDiv.right.accept(this);
@@ -285,7 +346,7 @@ public class Compiler {
 
                 @Override
                 public Void visit(PlusMinus plusMinus) {
-                    printIndent("PLUS_MINUS " + plusMinus.token.getText());
+                    printIndent(plusMinus.token.getText());
                     indent++;
                     plusMinus.left.accept(this);
                     plusMinus.right.accept(this);
@@ -295,7 +356,7 @@ public class Compiler {
 
                 @Override
                 public Void visit(Relational relational) {
-                    printIndent("RELATIONAL " + relational.token.getText());
+                    printIndent(relational.token.getText());
                     indent++;
                     relational.left.accept(this);
                     relational.right.accept(this);
@@ -305,8 +366,9 @@ public class Compiler {
 
                 @Override
                 public Void visit(Assign assign) {
-                    printIndent("ASSIGN " + assign.token.getText());
+                    printIndent(assign.token.getText());
                     indent++;
+                    printIndent(assign.name.getText());
                     assign.value.accept(this);
                     indent--;
                     return null;
@@ -315,15 +377,15 @@ public class Compiler {
                 @Override
                 public Void visit(Classs classs) {
                     printIndent("class");
+
                     indent++;
                     printIndent(classs.token.getText());
-
                     if (classs.inherit != null) {
                         printIndent(classs.inherit.getText());
                     }
-
                     classs.definitions.forEach(definition -> definition.accept(this));
                     indent--;
+
                     return null;
                 }
 
@@ -348,6 +410,60 @@ public class Compiler {
                     if (varDef.init != null) {
                         varDef.init.accept(this);
                     }
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(FuncDef funcDef) {
+                    printIndent("method");
+
+                    indent++;
+                    printIndent(funcDef.name.getText());
+                    funcDef.params.forEach(definition -> definition.accept(this));
+                    printIndent(funcDef.type.getText());
+                    funcDef.body.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Formal formal) {
+                    printIndent("formal");
+
+                    indent++;
+                    printIndent(formal.name.getText());
+                    printIndent(formal.type.getText());
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Paren paren) {
+                    paren.e.accept(this);
+                    return null;
+                }
+
+                @Override
+                public Void visit(IsVoid isVoid) {
+                    printIndent(isVoid.token.getText());
+
+                    indent++;
+                    isVoid.e.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(New neww) {
+                    printIndent(neww.token.getText());
+
+                    indent++;
+                    printIndent(neww.name.getText());
                     indent--;
 
                     return null;

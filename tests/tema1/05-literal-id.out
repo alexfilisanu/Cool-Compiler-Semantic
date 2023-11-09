@@ -8,11 +8,12 @@ program
     attribute
       s
       String
+      abc
     attribute
       b
       Bool
-      FLOAT false
+      false
     attribute
       c
       Bool
-      ID b
+      b

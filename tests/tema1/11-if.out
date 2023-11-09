@@ -1,3 +1,17 @@
-"11-if.cl", line 2:5, Syntax error: mismatched input 'f' expecting {TYPE, '}'}
-"11-if.cl", line 5:1, Syntax error: extraneous input '}' expecting {<EOF>, 'class'}
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Int
+      Int
+      IF
+        <=
+          x
+          5
+        x
+        +
+          x
+          1

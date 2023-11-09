@@ -1,3 +1,3 @@
-"16-string-special-chars.cl", line 2:5, Syntax error: mismatched input 's1' expecting {TYPE, '}'}
+"16-string-special-chars.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
 "16-string-special-chars.cl", line 3:5, Syntax error: extraneous input 's2' expecting {<EOF>, 'class'}
 Compilation halted

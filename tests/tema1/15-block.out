@@ -1,3 +1,3 @@
-"15-block.cl", line 2:5, Syntax error: mismatched input 'f' expecting {TYPE, '}'}
+"15-block.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
 "15-block.cl", line 5:13, Syntax error: extraneous input '"Done!"' expecting {<EOF>, 'class'}
 Compilation halted

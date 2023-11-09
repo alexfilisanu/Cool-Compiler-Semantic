@@ -4,65 +4,47 @@ program
     attribute
       p
       Int
-      PLUS_MINUS -
-        PLUS_MINUS +
+      -
+        +
           1
           2
         3
     attribute
       q
       Int
-      PLUS_MINUS +
-        PLUS_MINUS -
+      +
+        -
           1
           2
         3
     attribute
       p
       Int
-      MULT_DIV /
-        MULT_DIV *
+      /
+        *
           1
           2
         3
     attribute
       q
       Int
-      MULT_DIV *
-        MULT_DIV /
+      *
+        /
           1
           2
         3
     attribute
       n
       Int
-      PLUS_MINUS +
+      +
         1
-        MULT_DIV /
-          MULT_DIV *
+        /
+          *
             2
-Exception in thread "main" java.lang.NullPointerException: Cannot invoke "cool.compiler.Expression.accept(cool.compiler.ASTVisitor)" because "multDiv.right" is null
-	at cool.compiler.Compiler$3.visit(Compiler.java:281)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.MultDiv.accept(MultDiv.java:18)
-	at cool.compiler.Compiler$3.visit(Compiler.java:280)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.MultDiv.accept(MultDiv.java:18)
-	at cool.compiler.Compiler$3.visit(Compiler.java:291)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.PlusMinus.accept(PlusMinus.java:18)
-	at cool.compiler.Compiler$3.visit(Compiler.java:349)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.VarDef.accept(VarDef.java:29)
-	at cool.compiler.Compiler$3.lambda$visit$1(Compiler.java:325)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at cool.compiler.Compiler$3.visit(Compiler.java:325)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.Classs.accept(Classs.java:20)
-	at cool.compiler.Compiler$3.lambda$visit$2(Compiler.java:335)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at cool.compiler.Compiler$3.visit(Compiler.java:335)
-	at cool.compiler.Compiler$3.visit(Compiler.java:220)
-	at cool.compiler.Program.accept(Program.java:16)
-	at cool.compiler.Compiler.main(Compiler.java:364)
-	at cool.tester.Tester1.main(Tester1.java:33)
+            +
+              3
+              4
+          -
+            5
+            ~
+              6

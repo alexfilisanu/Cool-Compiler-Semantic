@@ -1,3 +1,27 @@
-"04-method.cl", line 4:6, Syntax error: mismatched input '(' expecting ':'
-"04-method.cl", line 10:6, Syntax error: mismatched input '(' expecting ':'
-Compilation halted
+program
+  class
+    A
+    attribute
+      x
+      SELF_TYPE
+    method
+      f
+      Object
+      0
+  class
+    B
+    A
+    attribute
+      y
+      Int
+      0
+    method
+      g
+      formal
+        x
+        Int
+      formal
+        y
+        Bool
+      Int
+      0
