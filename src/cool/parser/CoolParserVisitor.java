@@ -39,6 +39,18 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncDef(CoolParser.FuncDefContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CoolParser#letVar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLetVar(CoolParser.LetVarContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CoolParser#caseStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCaseStatement(CoolParser.CaseStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CoolParser#formal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -143,6 +155,13 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSelf(CoolParser.SelfContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code let}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLet(CoolParser.LetContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code relational}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree
@@ -163,6 +182,13 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIf(CoolParser.IfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code case}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCase(CoolParser.CaseContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code assign}
 	 * labeled alternative in {@link CoolParser#expr}.

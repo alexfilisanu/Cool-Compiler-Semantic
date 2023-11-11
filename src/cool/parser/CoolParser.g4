@@ -19,6 +19,10 @@ definition
             COLON type=TYPE LBRACE (body=expr)? RBRACE              # funcDef
     ;
 
+letVar : name=ID COLON type=TYPE (ASSIGN init=expr)?;
+
+caseStatement : name=ID COLON type=TYPE RESULT init=expr SEMI;
+
 formal : name=ID COLON type=TYPE;
 
 expr
@@ -32,6 +36,8 @@ expr
     |   left=expr op=(LT | LE | EQUAL) right=expr                   # relational
     |   IF cond=expr THEN thenBranch=expr ELSE elseBranch=expr FI   # if
     |   WHILE cond=expr LOOP body=expr POOL                         # while
+    |   LET letVars+=letVar (COMMA letVars+=letVar)* IN body=expr   # let
+    |   CASE e=expr OF (caseStatements+=caseStatement)* ESAC         # case
     |   name=ID ASSIGN value=expr                                   # assign
     |   IS_VOID e=expr                                              # isvoid
     |   NOT e=expr                                                  # not

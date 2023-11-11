@@ -4,6 +4,8 @@ public interface ASTVisitor<T> {
 	T visit(Id id);
 	T visit(Int intt);
 	T visit(If iff);
+	T visit(While whilee);
+	T visit(Let let);
 	T visit(Bool bool);
 	T visit(Stringg string);
 	T visit(Call call);
@@ -17,11 +19,14 @@ public interface ASTVisitor<T> {
 	T visit(Classs classs);
 	T visit(Program program);
 	T visit(VarDef varDef);
+	T visit(LetVar letVar);
 	T visit(FuncDef funcDef);
 	T visit(Formal formal);
 	T visit(Paren paren);
 	T visit(IsVoid isVoid);
 	T visit(New neww);
 	T visit(Self self);
+	T visit(CaseStatement caseStatement);
+	T visit(Case casee);
 }
 

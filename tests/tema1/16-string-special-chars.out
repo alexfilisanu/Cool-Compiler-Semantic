@@ -1,3 +1,24 @@
-"16-string-special-chars.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
-"16-string-special-chars.cl", line 3:5, Syntax error: extraneous input 's2' expecting {<EOF>, 'class'}
-Compilation halted
+program
+  class
+    A
+    attribute
+      s1
+      String
+      ab\tcd
+    attribute
+      s2
+      String
+      ab\ncd
+    attribute
+      s3
+      String
+      ab\
+cd
+    attribute
+      s4
+      String
+      ab\\cd
+    attribute
+      s5
+      String
+      ab\zcd

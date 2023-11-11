@@ -1,3 +1,23 @@
-"13-let.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
-"13-let.cl", line 8:1, Syntax error: extraneous input '}' expecting {<EOF>, 'class'}
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Int
+      Int
+      let
+        local
+          x
+          Int
+          +
+            x
+            1
+        local
+          y
+          Int
+          +
+            x
+            1
+        x

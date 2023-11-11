@@ -1,6 +1,23 @@
-"14-case.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
-line 4:24 token recognition error at: '>'
-"14-case.cl", line 5:13, Syntax error: extraneous input 'i' expecting {<EOF>, 'class'}
-line 5:24 token recognition error at: '>'
-line 6:24 token recognition error at: '>'
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Object
+      String
+      case
+        x
+        case branch
+          s
+          String
+          String
+        case branch
+          i
+          Int
+          Int
+        case branch
+          o
+          Object
+          Oops

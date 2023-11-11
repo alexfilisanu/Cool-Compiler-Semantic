@@ -142,6 +142,27 @@ public class Compiler {
                 }
 
                 @Override
+                public ASTNode visitWhile(CoolParser.WhileContext ctx) {
+                    return new While((Expression)visit(ctx.cond),
+                            (Expression)visit(ctx.body),
+                            ctx.start);
+                }
+
+                @Override
+                public ASTNode visitLet(CoolParser.LetContext ctx) {
+                    return new Let(ctx.letVars.stream().map(x -> (LetVar) visit(x)).collect(Collectors.toList()),
+                            (Expression)visit(ctx.body),
+                            ctx.start);
+                }
+
+                @Override
+                public ASTNode visitCase(CoolParser.CaseContext ctx) {
+                    return new Case((Expression)visit(ctx.e),
+                            ctx.caseStatements.stream().map(x -> (CaseStatement) visit(x)).collect(Collectors.toList()),
+                            ctx.start);
+                }
+
+                @Override
                 public ASTNode visitBool(CoolParser.BoolContext ctx) {
                     return new Bool(ctx.BOOL().getSymbol());
                 }
@@ -231,6 +252,25 @@ public class Compiler {
                 }
 
                 @Override
+                public ASTNode visitLetVar(CoolParser.LetVarContext ctx) {
+                    return ctx.init != null
+                            ? new LetVar(ctx.name,
+                                ctx.type,
+                                (Expression) visit(ctx.init),
+                                ctx.start)
+                            : new LetVar(ctx.name,
+                                ctx.type,
+                                ctx.start);
+                }
+
+                @Override
+                public ASTNode visitCaseStatement(CoolParser.CaseStatementContext ctx) {
+                    return new CaseStatement(ctx.name,
+                            ctx.type,
+                            (Expression) visit(ctx.init));
+                }
+
+                @Override
                 public ASTNode visitFuncDef(CoolParser.FuncDefContext ctx) {
                     return new FuncDef(ctx.name,
                             ctx.type,
@@ -294,6 +334,42 @@ public class Compiler {
                     iff.cond.accept(this);
                     iff.thenBranch.accept(this);
                     iff.elseBranch.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(While whilee) {
+                    printIndent("while");
+
+                    indent++;
+                    whilee.cond.accept(this);
+                    whilee.body.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Let let) {
+                    printIndent("let");
+
+                    indent++;
+                    let.letVars.forEach(varDef -> varDef.accept(this));
+                    let.body.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Case casee) {
+                    printIndent("case");
+
+                    indent++;
+                    casee.e.accept(this);
+                    casee.caseStatements.forEach(caseStatement -> caseStatement.accept(this));
                     indent--;
 
                     return null;
@@ -454,6 +530,34 @@ public class Compiler {
                 }
 
                 @Override
+                public Void visit(LetVar letVar) {
+                    printIndent("local");
+
+                    indent++;
+                    printIndent(letVar.name.getText());
+                    printIndent(letVar.type.getText());
+                    if (letVar.init != null) {
+                        letVar.init.accept(this);
+                    }
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(CaseStatement caseStatement) {
+                    printIndent("case branch");
+
+                    indent++;
+                    printIndent(caseStatement.name.getText());
+                    printIndent(caseStatement.type.getText());
+                    caseStatement.init.accept(this);
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
                 public Void visit(FuncDef funcDef) {
                     printIndent("method");
 
@@ -461,7 +565,9 @@ public class Compiler {
                     printIndent(funcDef.name.getText());
                     funcDef.params.forEach(definition -> definition.accept(this));
                     printIndent(funcDef.type.getText());
-                    funcDef.body.accept(this);
+                    if (Objects.nonNull(funcDef.body)) {
+                        funcDef.body.accept(this);
+                    }
                     indent--;
 
                     return null;

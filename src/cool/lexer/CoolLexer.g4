@@ -22,6 +22,9 @@ WHILE : 'while';
 LOOP : 'loop';
 POOL : 'pool';
 
+LET : 'let';
+IN : 'in';
+
 CASE : 'case';
 OF : 'of';
 ESAC : 'esac';
@@ -66,6 +69,7 @@ DIV : '/';
 EQUAL : '=';
 LT : '<';
 LE : '<=';
+RESULT : '=>';
 
 fragment NEW_LINE : '\r'? '\n';
 

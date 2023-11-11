@@ -2,12 +2,12 @@ package cool.compiler;
 
 import org.antlr.v4.runtime.Token;
 
-public class VarDef extends Expression {
+public class LetVar extends Expression {
 	Token name;
 	Token type;
 	Expression init;
 
-	VarDef(Token name,
+	LetVar(Token name,
 		   Token type,
 		   Expression init,
 		   Token start) {
@@ -17,7 +17,7 @@ public class VarDef extends Expression {
 		this.init = init;
 	}
 
-	VarDef(Token name,
+	LetVar(Token name,
 		   Token type,
 		   Token start) {
 		super(start);

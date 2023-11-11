@@ -2,27 +2,18 @@ package cool.compiler;
 
 import org.antlr.v4.runtime.Token;
 
-public class VarDef extends Expression {
+public class CaseStatement extends Expression {
 	Token name;
 	Token type;
 	Expression init;
 
-	VarDef(Token name,
+	CaseStatement(Token name,
 		   Token type,
-		   Expression init,
-		   Token start) {
-		super(start);
+		   Expression init) {
+		super(name);
 		this.name = name;
 		this.type = type;
 		this.init = init;
-	}
-
-	VarDef(Token name,
-		   Token type,
-		   Token start) {
-		super(start);
-		this.name = name;
-		this.type = type;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

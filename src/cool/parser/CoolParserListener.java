@@ -54,6 +54,26 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitFuncDef(CoolParser.FuncDefContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CoolParser#letVar}.
+	 * @param ctx the parse tree
+	 */
+	void enterLetVar(CoolParser.LetVarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CoolParser#letVar}.
+	 * @param ctx the parse tree
+	 */
+	void exitLetVar(CoolParser.LetVarContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CoolParser#caseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterCaseStatement(CoolParser.CaseStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CoolParser#caseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitCaseStatement(CoolParser.CaseStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CoolParser#formal}.
 	 * @param ctx the parse tree
 	 */
@@ -232,6 +252,18 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitSelf(CoolParser.SelfContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code let}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterLet(CoolParser.LetContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code let}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitLet(CoolParser.LetContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code relational}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree
@@ -267,6 +299,18 @@ public interface CoolParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIf(CoolParser.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code case}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCase(CoolParser.CaseContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code case}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCase(CoolParser.CaseContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code assign}
 	 * labeled alternative in {@link CoolParser#expr}.

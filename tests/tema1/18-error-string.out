@@ -1,3 +1,2 @@
-"18-error-string.cl", line 1:9, Syntax error: mismatched input '{' expecting {'inherits', '{'}
-"18-error-string.cl", line 3:5, Syntax error: extraneous input 'null' expecting {<EOF>, 'class'}
+"18-error-string.cl", line 6:22, Syntax error: missing ';' at 'nirvana'
 Compilation halted

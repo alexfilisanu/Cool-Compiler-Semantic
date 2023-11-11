@@ -7,19 +7,12 @@ program
         x
         Int
       Object
-Exception in thread "main" java.lang.NullPointerException: Cannot invoke "cool.compiler.Expression.accept(cool.compiler.ASTVisitor)" because "funcDef.body" is null
-	at cool.compiler.Compiler$3.visit(Compiler.java:464)
-	at cool.compiler.Compiler$3.visit(Compiler.java:274)
-	at cool.compiler.FuncDef.accept(FuncDef.java:26)
-	at cool.compiler.Compiler$3.lambda$visit$2(Compiler.java:424)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at cool.compiler.Compiler$3.visit(Compiler.java:424)
-	at cool.compiler.Compiler$3.visit(Compiler.java:274)
-	at cool.compiler.Classs.accept(Classs.java:20)
-	at cool.compiler.Compiler$3.lambda$visit$3(Compiler.java:435)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at cool.compiler.Compiler$3.visit(Compiler.java:435)
-	at cool.compiler.Compiler$3.visit(Compiler.java:274)
-	at cool.compiler.Program.accept(Program.java:16)
-	at cool.compiler.Compiler.main(Compiler.java:524)
-	at cool.tester.Tester1.main(Tester1.java:33)
+      while
+        <
+          0
+          x
+        <-
+          x
+          -
+            x
+            1
