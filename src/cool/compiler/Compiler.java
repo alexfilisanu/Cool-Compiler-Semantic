@@ -179,6 +179,12 @@ public class Compiler {
                 }
 
                 @Override
+                public ASTNode visitBlock(CoolParser.BlockContext ctx) {
+                    return new Block(ctx.exprs.stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()),
+                            ctx.start);
+                }
+
+                @Override
                 public ASTNode visitBitwiseNot(CoolParser.BitwiseNotContext ctx) {
                     return new BitwiseNot(ctx.TILDE().getSymbol(),
                             (Expression)visit(ctx.e));
@@ -383,8 +389,18 @@ public class Compiler {
 
                 @Override
                 public Void visit(Stringg stringg) {
-                    var len = stringg.token.getText().length() - 1;
-                    printIndent(stringg.token.getText().substring(1, len));
+                    // replace for special characters
+                    String interpretedString = stringg.token.getText()
+                            .replace("\\t", "\t")
+                            .replace("\\n", "\n")
+                            .replace("\\b", "\b")
+                            .replace("\\f", "\f")
+                            .replace("\\\\", "\\");
+
+                    int len = interpretedString.length() - 1;
+                    // remove quotes for string and
+                    printIndent(interpretedString.substring(1, len));
+
                     return null;
                 }
 
@@ -395,6 +411,17 @@ public class Compiler {
                     indent++;
                     printIndent(call.token.getText());
                     call.args.forEach(x -> x.accept(this));
+                    indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Block block) {
+                    printIndent("block");
+
+                    indent++;
+                    block.exprs.forEach(x -> x.accept(this));
                     indent--;
 
                     return null;

@@ -36,19 +36,17 @@ NOT : 'not';
 IS_VOID : 'isvoid';
 SELF : 'self';
 
-fragment SELF_TYPE : 'SELF_TYPE';
-
 fragment LOWERCASE : [a-z];
 fragment UPPERCASE : [A-Z];
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
 
-TYPE : UPPERCASE(LOWERCASE)* | SELF_TYPE;
-ID : (LOWERCASE | '_')(LETTER | '_' | DIGIT)*;
+TYPE : UPPERCASE(LETTER | '_' | DIGIT)*;
+ID : LOWERCASE(LETTER | '_' | DIGIT)*;
 
 INT : DIGIT+;
 BOOL : 'true' | 'false';
-STRING : QUOTATION ('\\"' | .)*? QUOTATION;
+STRING : QUOTATION (.)*? QUOTATION;
 
 SEMI : ';';
 COMMA : ',';
@@ -74,6 +72,6 @@ RESULT : '=>';
 fragment NEW_LINE : '\r'? '\n';
 
 LINE_COMMENT : '--' .*? (NEW_LINE | EOF) -> skip;
-BLOCK_COMMENT : '/*' (BLOCK_COMMENT | .)*? '*/' -> skip;
+BLOCK_COMMENT : '(*' (BLOCK_COMMENT | .)*? '*)' -> skip;
 
 WS : [ \n\f\r\t]+ -> skip;

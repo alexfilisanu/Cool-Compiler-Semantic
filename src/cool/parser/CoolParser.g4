@@ -29,6 +29,7 @@ expr
     :   e=expr (AT_SIGN type=TYPE)? DOT
             name=ID LPAREN (args+=expr (COMMA args+=expr)*)? RPAREN # dispatch
     |   name=ID LPAREN (args+=expr (COMMA args+=expr)*)? RPAREN     # call
+    |   LBRACE (exprs+=expr SEMI)* RBRACE                           # block
     |   TILDE e=expr                                                # bitwiseNot
     |   NEW name=TYPE                                               # new
     |   left=expr op=(MULT | DIV) right=expr                        # multDiv
@@ -37,7 +38,7 @@ expr
     |   IF cond=expr THEN thenBranch=expr ELSE elseBranch=expr FI   # if
     |   WHILE cond=expr LOOP body=expr POOL                         # while
     |   LET letVars+=letVar (COMMA letVars+=letVar)* IN body=expr   # let
-    |   CASE e=expr OF (caseStatements+=caseStatement)* ESAC         # case
+    |   CASE e=expr OF (caseStatements+=caseStatement)* ESAC        # case
     |   name=ID ASSIGN value=expr                                   # assign
     |   IS_VOID e=expr                                              # isvoid
     |   NOT e=expr                                                  # not

@@ -28,5 +28,6 @@ public interface ASTVisitor<T> {
 	T visit(Self self);
 	T visit(CaseStatement caseStatement);
 	T visit(Case casee);
+	T visit(Block block);
 }
 

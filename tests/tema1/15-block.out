@@ -1,6 +1,16 @@
-"15-block.cl", line 3:9, Syntax error: extraneous input '{' expecting {'if', 'while', 'let', 'case', 'new', 'not', 'isvoid', 'self', ID, INT, BOOL, STRING, '(', '}', '~'}
-"15-block.cl", line 4:23, Syntax error: missing '}' at ';'
-"15-block.cl", line 5:13, Syntax error: extraneous input '"Done!"' expecting {ID, '}'}
-"15-block.cl", line 7:5, Syntax error: extraneous input '}' expecting ';'
-"15-block.cl", line 8:1, Syntax error: extraneous input '}' expecting {<EOF>, 'class'}
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Int
+      String
+      block
+        <-
+          x
+          +
+            x
+            1
+        Done!
