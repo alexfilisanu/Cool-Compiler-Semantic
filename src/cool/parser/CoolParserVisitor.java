@@ -59,6 +59,13 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPlusMinus(CoolParser.PlusMinusContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code dispatch}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDispatch(CoolParser.DispatchContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code bool}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree
@@ -128,6 +135,13 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMultDiv(CoolParser.MultDivContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code self}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelf(CoolParser.SelfContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code relational}
 	 * labeled alternative in {@link CoolParser#expr}.

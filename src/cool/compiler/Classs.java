@@ -8,10 +8,10 @@ public class Classs extends Expression {
 	Token inherit;
 	List<Expression> definitions;
 
-	Classs(Token name,
+	Classs(Token type,
 		 Token inherit,
 		 List<Expression> definitions) {
-		super(name);
+		super(type);
 		this.inherit = inherit;
 		this.definitions = definitions;
 	}

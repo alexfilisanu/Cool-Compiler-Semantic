@@ -29,9 +29,9 @@ ESAC : 'esac';
 NEW : 'new';
 CLASS : 'class';
 INHERITS : 'inherits';
-
 NOT : 'not';
 IS_VOID : 'isvoid';
+SELF : 'self';
 
 fragment SELF_TYPE : 'SELF_TYPE';
 
@@ -40,8 +40,8 @@ fragment UPPERCASE : [A-Z];
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
 
-TYPE : 'Int' | 'Bool' | 'String' | 'Object' | SELF_TYPE;
-ID : (LETTER | '_')(LETTER | '_' | DIGIT)*;
+TYPE : UPPERCASE(LOWERCASE)* | SELF_TYPE;
+ID : (LOWERCASE | '_')(LETTER | '_' | DIGIT)*;
 
 INT : DIGIT+;
 BOOL : 'true' | 'false';

@@ -7,6 +7,7 @@ public interface ASTVisitor<T> {
 	T visit(Bool bool);
 	T visit(Stringg string);
 	T visit(Call call);
+	T visit(Dispatch dispatch);
 	T visit(BitwiseNot bitwiseNot);
 	T visit(Not not);
 	T visit(MultDiv multDiv);
@@ -21,5 +22,6 @@ public interface ASTVisitor<T> {
 	T visit(Paren paren);
 	T visit(IsVoid isVoid);
 	T visit(New neww);
+	T visit(Self self);
 }
 

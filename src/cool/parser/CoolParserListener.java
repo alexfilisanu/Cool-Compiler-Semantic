@@ -88,6 +88,18 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitPlusMinus(CoolParser.PlusMinusContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code dispatch}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterDispatch(CoolParser.DispatchContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code dispatch}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitDispatch(CoolParser.DispatchContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code bool}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree
@@ -207,6 +219,18 @@ public interface CoolParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMultDiv(CoolParser.MultDivContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code self}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelf(CoolParser.SelfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code self}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelf(CoolParser.SelfContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code relational}
 	 * labeled alternative in {@link CoolParser#expr}.

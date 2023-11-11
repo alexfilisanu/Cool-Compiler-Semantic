@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.*;
 import cool.parser.*;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -198,9 +199,17 @@ public class Compiler {
 
                 @Override
                 public ASTNode visitClass(CoolParser.ClassContext ctx) {
-                    return new Classs(ctx.name,
+                    return new Classs(ctx.type,
                             ctx.inherit,
                             ctx.definition().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
+                }
+
+                @Override
+                public ASTNode visitDispatch(CoolParser.DispatchContext ctx) {
+                    return new Dispatch(ctx.name,
+                            (Expression)visit(ctx.e),
+                            ctx.type,
+                            ctx.expr().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
                 }
 
                 @Override
@@ -254,6 +263,11 @@ public class Compiler {
                     return new New(ctx.NEW().getSymbol(),
                             ctx.name);
                 }
+
+                @Override
+                public ASTNode visitSelf(CoolParser.SelfContext ctx) {
+                    return new Self(ctx.SELF().getSymbol());
+                }
             };
             // TODO Print tree
 
@@ -274,12 +288,14 @@ public class Compiler {
 
                 @Override
                 public Void visit(If iff) {
-                    printIndent("IF");
+                    printIndent("if");
+
                     indent++;
                     iff.cond.accept(this);
                     iff.thenBranch.accept(this);
                     iff.elseBranch.accept(this);
                     indent--;
+
                     return null;
                 }
 
@@ -298,68 +314,101 @@ public class Compiler {
 
                 @Override
                 public Void visit(Call call) {
-                    printIndent("CALL " + call.token.getText());
+                    printIndent("implicit dispatch");
+
                     indent++;
+                    printIndent(call.token.getText());
                     call.args.forEach(x -> x.accept(this));
                     indent--;
+
+                    return null;
+                }
+
+                @Override
+                public Void visit(Dispatch dispatch) {
+                    printIndent(".");
+
+                    indent++;
+                    dispatch.e.accept(this);
+                    if (Objects.nonNull(dispatch.type)) {
+                        printIndent(dispatch.type.getText());
+                    }
+                    printIndent(dispatch.token.getText());
+                    // sublist(1,) because e(first element of args) is already accepted before
+                    dispatch.args.subList(1, dispatch.args.size())
+                            .forEach(x -> x.accept(this));
+                    indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(BitwiseNot bitwiseNot) {
                     printIndent(bitwiseNot.token.getText());
+
                     indent++;
                     bitwiseNot.e.accept(this);
                     indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(Not not) {
                     printIndent(not.token.getText());
+
                     indent++;
                     not.e.accept(this);
                     indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(MultDiv multDiv) {
                     printIndent(multDiv.token.getText());
+
                     indent++;
                     multDiv.left.accept(this);
                     multDiv.right.accept(this);
                     indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(PlusMinus plusMinus) {
                     printIndent(plusMinus.token.getText());
+
                     indent++;
                     plusMinus.left.accept(this);
                     plusMinus.right.accept(this);
                     indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(Relational relational) {
                     printIndent(relational.token.getText());
+
                     indent++;
                     relational.left.accept(this);
                     relational.right.accept(this);
                     indent--;
+
                     return null;
                 }
 
                 @Override
                 public Void visit(Assign assign) {
                     printIndent(assign.token.getText());
+
                     indent++;
                     printIndent(assign.name.getText());
                     assign.value.accept(this);
                     indent--;
+
                     return null;
                 }
 
@@ -455,6 +504,12 @@ public class Compiler {
                     printIndent(neww.name.getText());
                     indent--;
 
+                    return null;
+                }
+
+                @Override
+                public Void visit(Self self) {
+                    printIndent(self.token.getText());
                     return null;
                 }
 

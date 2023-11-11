@@ -10,21 +10,23 @@ options {
 
 program : (classes+=class SEMI)+ EOF;
 
-class : CLASS name=ID (INHERITS inherit=ID)?
+class : CLASS type=TYPE (INHERITS inherit=TYPE)?
             LBRACE (definitions+=definition SEMI)* RBRACE;
 
 definition
     :   name=ID COLON type=TYPE (ASSIGN init=expr)?                 # varDef
     |   name=ID LPAREN (formals+=formal (COMMA formals+=formal)*)? RPAREN
-            COLON type=TYPE LBRACE body=expr RBRACE                 # funcDef
+            COLON type=TYPE LBRACE (body=expr)? RBRACE              # funcDef
     ;
 
 formal : name=ID COLON type=TYPE;
 
 expr
-    :   name=ID LPAREN (args+=expr (COMMA args+=expr)*)? RPAREN     # call
+    :   e=expr (AT_SIGN type=TYPE)? DOT
+            name=ID LPAREN (args+=expr (COMMA args+=expr)*)? RPAREN # dispatch
+    |   name=ID LPAREN (args+=expr (COMMA args+=expr)*)? RPAREN     # call
     |   TILDE e=expr                                                # bitwiseNot
-    |   NEW name=ID                                                 # new
+    |   NEW name=TYPE                                               # new
     |   left=expr op=(MULT | DIV) right=expr                        # multDiv
     |   left=expr op=(PLUS | MINUS) right=expr                      # plusMinus
     |   left=expr op=(LT | LE | EQUAL) right=expr                   # relational
@@ -34,6 +36,7 @@ expr
     |   IS_VOID e=expr                                              # isvoid
     |   NOT e=expr                                                  # not
     |   LPAREN e=expr RPAREN                                        # paren
+    |   SELF                                                        # self
     |   ID                                                          # id
     |   INT                                                         # int
     |   BOOL                                                        # bool
