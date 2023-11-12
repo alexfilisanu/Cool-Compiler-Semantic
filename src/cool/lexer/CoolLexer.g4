@@ -6,7 +6,9 @@ tokens { ERROR }
     package cool.lexer;	
 }
 
-@members{    
+@members{
+    int stringSize = 0;
+
     private void raiseError(String msg) {
         setText(msg);
         setType(ERROR);
@@ -40,13 +42,27 @@ fragment LOWERCASE : [a-z];
 fragment UPPERCASE : [A-Z];
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
+fragment NULLCHAR: '\u0000';
+fragment SPECIALCHARS : '\\t' | '\\n' | '\\b' | '\\f' | '\\\\';
+fragment NEW_LINE : '\r'? '\n';
 
 TYPE : UPPERCASE(LETTER | '_' | DIGIT)*;
 ID : LOWERCASE(LETTER | '_' | DIGIT)*;
 
 INT : DIGIT+;
 BOOL : 'true' | 'false';
-STRING : QUOTATION (.)*? QUOTATION;
+
+STRING : QUOTATION { stringSize = 0; }
+    (
+        NULLCHAR { raiseError("String contains null character"); }
+        | SPECIALCHARS { stringSize++; }
+        | . { stringSize++; }
+    )*?
+    (
+        QUOTATION { if (stringSize > 1024) { raiseError("String constant too long"); } }
+        | NEW_LINE { raiseError("Unterminated string constant"); }
+        | EOF { raiseError("EOF in string constant"); }
+    );
 
 SEMI : ';';
 COMMA : ',';
@@ -69,9 +85,14 @@ LT : '<';
 LE : '<=';
 RESULT : '=>';
 
-fragment NEW_LINE : '\r'? '\n';
-
 LINE_COMMENT : '--' .*? (NEW_LINE | EOF) -> skip;
+
 BLOCK_COMMENT : '(*' (BLOCK_COMMENT | .)*? '*)' -> skip;
+
+// comment can contain either another (BLOCK_COMMENT) or any character
+// that is not * or ) and if EOF is before *) => "EOF in comment"
+EOF_IN_COMMENT : '(*' (BLOCK_COMMENT | ~([*)]).)*? (EOF { raiseError("EOF in comment"); });
+
+UNMATCHED_END_COMMENT : '*)' { raiseError("Unmatched *)"); };
 
 WS : [ \n\f\r\t]+ -> skip;

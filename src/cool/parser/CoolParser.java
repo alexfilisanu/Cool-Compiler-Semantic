@@ -24,7 +24,8 @@ public class CoolParser extends Parser {
 		SELF=19, TYPE=20, ID=21, INT=22, BOOL=23, STRING=24, SEMI=25, COMMA=26, 
 		DOT=27, COLON=28, QUOTATION=29, ASSIGN=30, LPAREN=31, RPAREN=32, LBRACE=33, 
 		RBRACE=34, AT_SIGN=35, TILDE=36, PLUS=37, MINUS=38, MULT=39, DIV=40, EQUAL=41, 
-		LT=42, LE=43, RESULT=44, LINE_COMMENT=45, BLOCK_COMMENT=46, WS=47;
+		LT=42, LE=43, RESULT=44, LINE_COMMENT=45, BLOCK_COMMENT=46, EOF_IN_COMMENT=47, 
+		UNMATCHED_END_COMMENT=48, WS=49;
 	public static final int
 		RULE_program = 0, RULE_class = 1, RULE_definition = 2, RULE_letVar = 3, 
 		RULE_caseStatement = 4, RULE_formal = 5, RULE_expr = 6;
@@ -43,7 +44,7 @@ public class CoolParser extends Parser {
 			"'inherits'", "'not'", "'isvoid'", "'self'", null, null, null, null, 
 			null, "';'", "','", "'.'", "':'", "'\"'", "'<-'", "'('", "')'", "'{'", 
 			"'}'", "'@'", "'~'", "'+'", "'-'", "'*'", "'/'", "'='", "'<'", "'<='", 
-			"'=>'"
+			"'=>'", null, null, null, "'*)'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -54,7 +55,8 @@ public class CoolParser extends Parser {
 			"SELF", "TYPE", "ID", "INT", "BOOL", "STRING", "SEMI", "COMMA", "DOT", 
 			"COLON", "QUOTATION", "ASSIGN", "LPAREN", "RPAREN", "LBRACE", "RBRACE", 
 			"AT_SIGN", "TILDE", "PLUS", "MINUS", "MULT", "DIV", "EQUAL", "LT", "LE", 
-			"RESULT", "LINE_COMMENT", "BLOCK_COMMENT", "WS"
+			"RESULT", "LINE_COMMENT", "BLOCK_COMMENT", "EOF_IN_COMMENT", "UNMATCHED_END_COMMENT", 
+			"WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1680,7 +1682,7 @@ public class CoolParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001/\u00cc\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u00011\u00cc\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0001\u0000\u0001\u0000\u0001"+
 		"\u0000\u0004\u0000\u0012\b\u0000\u000b\u0000\f\u0000\u0013\u0001\u0000"+

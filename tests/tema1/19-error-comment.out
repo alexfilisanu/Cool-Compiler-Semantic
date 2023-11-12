@@ -1,3 +1,3 @@
-"19-error-comment.cl", line 2:5, Syntax error: mismatched input '*' expecting {ID, '}'}
-"19-error-comment.cl", line 7:1, Syntax error: extraneous input '}' expecting {<EOF>, 'class'}
+"19-error-comment.cl", line 2:5, Lexical error: Unmatched *)
+"19-error-comment.cl", line 6:5, Lexical error: EOF in comment
 Compilation halted
