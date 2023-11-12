@@ -43,7 +43,7 @@ fragment UPPERCASE : [A-Z];
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
 fragment NULLCHAR: '\u0000';
-fragment SPECIALCHARS : '\\t' | '\\n' | '\\b' | '\\f' | '\\\\';
+fragment SPECIALCHARS : '\\t' | '\\n' | '\\b' | '\\f';
 fragment NEW_LINE : '\r'? '\n';
 
 TYPE : UPPERCASE(LETTER | '_' | DIGIT)*;
@@ -55,6 +55,7 @@ BOOL : 'true' | 'false';
 STRING : QUOTATION { stringSize = 0; }
     (
         NULLCHAR { raiseError("String contains null character"); }
+        | '\\\r\n'
         | SPECIALCHARS { stringSize++; }
         | . { stringSize++; }
     )*?

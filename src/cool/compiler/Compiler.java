@@ -391,11 +391,14 @@ public class Compiler {
                 public Void visit(Stringg stringg) {
                     // replace for special characters
                     String interpretedString = stringg.token.getText()
+                            .replace("\\\r\n", "\\n")
                             .replace("\\t", "\t")
                             .replace("\\n", "\n")
                             .replace("\\b", "\b")
                             .replace("\\f", "\f")
-                            .replace("\\\\", "\\");
+                            .replace("\\\\", "#")  // Use a temporary placeholder
+                            .replace("\\", "")
+                            .replace("#", "\\");   // Restore double backslashes
 
                     int len = interpretedString.length() - 1;
                     // remove quotes for string and
