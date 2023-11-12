@@ -95,4 +95,6 @@ EOF_IN_COMMENT : '(*' (BLOCK_COMMENT | ~([*)]).)*? (EOF { raiseError("EOF in com
 
 UNMATCHED_END_COMMENT : '*)' { raiseError("Unmatched *)"); };
 
+HASHTAG : '#' { raiseError("Invalid character: #"); };
+
 WS : [ \n\f\r\t]+ -> skip;

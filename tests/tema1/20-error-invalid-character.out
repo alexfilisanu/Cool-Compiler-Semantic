@@ -1,7 +1,2 @@
-line 2:13 token recognition error at: '#'
-program
-  class
-    A
-    attribute
-      x
-      Int
+"20-error-invalid-character.cl", line 2:14, Lexical error: Invalid character: #
+Compilation halted
