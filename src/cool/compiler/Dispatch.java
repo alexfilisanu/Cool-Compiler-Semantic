@@ -23,4 +23,3 @@ public class Dispatch extends Expression {
 		return visitor.visit(this);
 	}
 }
-

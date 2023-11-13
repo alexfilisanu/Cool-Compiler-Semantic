@@ -20,4 +20,3 @@ public class Case extends Expression {
 		return visitor.visit(this);
 	}
 }
-

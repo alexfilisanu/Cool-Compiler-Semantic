@@ -11,4 +11,3 @@ public class Bool extends Expression {
 		return visitor.visit(this);
 	}
 }
-

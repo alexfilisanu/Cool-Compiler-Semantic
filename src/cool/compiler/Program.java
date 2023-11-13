@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Program extends ASTNode {
 	List<Classs> classes;
+
 	public Program(List<Classs> classes,
 				   Token start) {
 		super(start);

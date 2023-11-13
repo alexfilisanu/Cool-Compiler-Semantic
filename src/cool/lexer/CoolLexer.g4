@@ -90,7 +90,7 @@ LINE_COMMENT : '--' .*? (NEW_LINE | EOF) -> skip;
 
 BLOCK_COMMENT : '(*' (BLOCK_COMMENT | .)*? '*)' -> skip;
 
-// comment can contain either another (BLOCK_COMMENT) or any character
+// comment can contain either another BLOCK_COMMENT or any character
 // that is not * or ) and if EOF is before *) => "EOF in comment"
 EOF_IN_COMMENT : '(*' (BLOCK_COMMENT | ~([*)]).)*? (EOF { raiseError("EOF in comment"); });
 

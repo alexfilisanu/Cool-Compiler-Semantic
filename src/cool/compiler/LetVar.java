@@ -9,20 +9,18 @@ public class LetVar extends Expression {
 
 	LetVar(Token name,
 		   Token type,
-		   Expression init,
 		   Token start) {
 		super(start);
 		this.name = name;
 		this.type = type;
-		this.init = init;
 	}
 
 	LetVar(Token name,
 		   Token type,
+		   Expression init,
 		   Token start) {
-		super(start);
-		this.name = name;
-		this.type = type;
+		this(name, type, start);
+		this.init = init;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

@@ -26,4 +26,3 @@ public class FuncDef extends Expression {
 		return visitor.visit(this);
 	}
 }
-

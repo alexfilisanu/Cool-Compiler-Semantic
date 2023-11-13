@@ -18,4 +18,3 @@ public class While extends Expression {
 		return visitor.visit(this);
 	}
 }
-
