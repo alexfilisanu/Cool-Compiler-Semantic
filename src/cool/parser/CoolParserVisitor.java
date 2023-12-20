@@ -1,4 +1,4 @@
-// Generated from C:/Users/mihai/Downloads/CPL/Tema1/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
+// Generated from C:/Users/mihai/Downloads/Cool-Compiler-Semantic/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
 
     package cool.parser;
 
