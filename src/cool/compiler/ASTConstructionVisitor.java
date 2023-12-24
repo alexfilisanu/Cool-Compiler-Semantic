@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitAssign(CoolParser.AssignContext ctx) {
-		return new Assign(ctx.ASSIGN().getSymbol(),
-				ctx.name,
+		return new Assign(ctx,
 				(Expression)visit(ctx.value));
 	}
 
@@ -52,8 +51,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitClass(CoolParser.ClassContext ctx) {
-		return new Classs(ctx.type,
-				ctx.inherit,
+		return new Classs(ctx,
 				ctx.definition().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
 	}
 

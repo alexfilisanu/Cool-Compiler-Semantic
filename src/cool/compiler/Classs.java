@@ -1,19 +1,26 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 import java.util.List;
 
 public class Classs extends Expression {
-	Token inherit;
-	List<Expression> definitions;
+	private List<Expression> definitions;
+	private CoolParser.ClassContext ctx;
 
-	Classs(Token type,
-		 Token inherit,
-		 List<Expression> definitions) {
-		super(type);
-		this.inherit = inherit;
+	public Classs(CoolParser.ClassContext ctx,
+		   List<Expression> definitions) {
+		super(ctx.start);
+		this.ctx = ctx;
 		this.definitions = definitions;
+	}
+
+	public List<Expression> getDefinitions() {
+		return definitions;
+	}
+
+	public CoolParser.ClassContext getCtx() {
+		return ctx;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

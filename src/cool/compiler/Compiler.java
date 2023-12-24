@@ -1,15 +1,15 @@
 package cool.compiler;
 
 import cool.lexer.CoolLexer;
+import cool.parser.CoolParser;
+import cool.structures.DefinitionPassVisitor;
+import cool.structures.ResolutionPassVisitor;
 import cool.structures.SymbolTable;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-import cool.parser.*;
-
-import java.io.*;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
 
 
 public class Compiler {
@@ -124,21 +124,33 @@ public class Compiler {
             }
 
             var astConstructionVisitor = new ASTConstructionVisitor();
+            var ast = astConstructionVisitor.visit(tree);
+
+            // Test1
+//            var printVisitor = new PrintVisitor();
+//            ast.accept(printVisitor);
 
             // Populate global scope.
             SymbolTable.defineBasicClasses();
 
             // TODO Semantic analysis
+            // În vederea gestiunii referirilor anticipate, utilizăm două treceri,
+            // una de definire a simbolurilor, și cealaltă, de rezolvare.
+            var definitionPassVisitor = new DefinitionPassVisitor();
+
+            // A doua trecere, pentru rezolvarea simbolurilor în raport cu domeniile
+            // de vizibilitate memorate în prima trecere. Observați că, în această
+            // trecere, nu mai este necesară gestiunea domeniului curent,
+            // ca în prima trecere.
+            var resolutionPassVisitor = new ResolutionPassVisitor();
+
+            ast.accept(definitionPassVisitor);
+            ast.accept(resolutionPassVisitor);
 
             if (SymbolTable.hasSemanticErrors()) {
                 System.err.println("Compilation halted");
                 return;
             }
-
-            // Test1
-//            var printVisitor = new PrintVisitor();
-//            var ast = astConstructionVisitor.visit(tree);
-//            ast.accept(printVisitor);
         }
     }
 }

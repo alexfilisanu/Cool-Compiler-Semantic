@@ -1,17 +1,24 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class Assign extends Expression {
-	Token name;
-	Expression value;
+	private CoolParser.AssignContext ctx;
+	private Expression value;
 
-	Assign(Token token,
-		   Token name,
+	public Assign(CoolParser.AssignContext ctx,
 		   Expression value) {
-		super(token);
-		this.name = name;
+		super(ctx.start);
+		this.ctx = ctx;
 		this.value = value;
+	}
+
+	public CoolParser.AssignContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getValue() {
+		return value;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

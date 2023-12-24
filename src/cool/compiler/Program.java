@@ -13,6 +13,10 @@ public class Program extends ASTNode {
 		this.classes = classes;
 	}
 
+	public List<Classs> getClasses() {
+		return classes;
+	}
+
 	public <T> T accept(ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}

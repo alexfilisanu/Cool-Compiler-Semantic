@@ -16,7 +16,9 @@ public class SymbolTable {
         globals = new DefaultScope(null);
         semanticErrors = false;
         
-        // TODO Populate global scope.
+        globals.add(TypeSymbol.INT);
+        globals.add(TypeSymbol.BOOL);
+        globals.add(TypeSymbol.STRING);
     }
     
     /**
@@ -48,7 +50,30 @@ public class SymbolTable {
         
         semanticErrors = true;
     }
-    
+
+    public static boolean isIllegalParent(Token parent) {
+        return parent.getText().equals("Int")
+                || parent.getText().equals("String")
+                || parent.getText().equals("Bool")
+                || parent.getText().equals("SELF_TYPE");
+    }
+
+    public static boolean isUndefinedParent(Token parent) {
+        return globals.lookup(parent.getText()) == null;
+    }
+
+    public static boolean isInheritanceCycle(Token child) {
+        Scope scope = globals;
+        while (scope != null) {
+            if (scope.lookup(child.getText()) != null) {
+                return true;
+            }
+            scope = scope.getParent();
+        }
+
+        return false;
+    }
+
     public static boolean hasSemanticErrors() {
         return semanticErrors;
     }

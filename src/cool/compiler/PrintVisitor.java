@@ -7,11 +7,12 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Assign assign) {
-		printIndent(assign.token.getText());
+		var ctx = assign.getCtx();
+		printIndent(ctx.ASSIGN().getSymbol().getText());
 
 		indent++;
-		printIndent(assign.name.getText());
-		assign.value.accept(this);
+		printIndent(ctx.name.getText());
+		assign.getValue().accept(this);
 		indent--;
 
 		return null;
@@ -85,14 +86,15 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Classs classs) {
+		var ctx = classs.getCtx();
 		printIndent("class");
 
 		indent++;
-		printIndent(classs.token.getText());
-		if (classs.inherit != null) {
-			printIndent(classs.inherit.getText());
+		printIndent(ctx.type.getText());
+		if (ctx.inherit != null) {
+			printIndent(ctx.inherit.getText());
 		}
-		classs.definitions.forEach(definition -> definition.accept(this));
+		classs.getDefinitions().forEach(definition -> definition.accept(this));
 		indent--;
 
 		return null;
