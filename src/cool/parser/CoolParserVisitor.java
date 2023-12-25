@@ -148,13 +148,6 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultDiv(CoolParser.MultDivContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSelf(CoolParser.SelfContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code block}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree

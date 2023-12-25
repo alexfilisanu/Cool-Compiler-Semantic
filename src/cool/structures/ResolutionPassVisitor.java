@@ -14,11 +14,6 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 	}
 
 	@Override
-	public TypeSymbol visit(Self self) {
-		return null;
-	}
-
-	@Override
 	public TypeSymbol visit(Relational relational) {
 		return null;
 	}
@@ -119,6 +114,11 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			}
 		}
 
+		var definitions = classs.getDefinitions();
+		for (var def : definitions) {
+			def.accept(this);
+		}
+
 		return null;
 	}
 
@@ -134,7 +134,20 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Id id) {
-		return null;
+		// Verificăm dacă într-adevăr avem de-a face cu o variabilă
+		// sau cu o funcție, al doilea caz constituind eroare.
+		// Puteți folosi instanceof.
+		var symbol = id.getScope().lookup(id.getToken().getText());
+
+		if (symbol instanceof FunctionSymbol) {
+//			ASTVisitor.error(id.getToken(),
+//					id.getToken().getText() + " is not a variable");
+			return null;
+		}
+
+		// TODO 2: Întoarcem informația de tip salvată deja în simbol încă de la
+		// definirea variabilei.
+		return id.getSymbol().getType();
 	}
 
 	@Override
@@ -169,7 +182,19 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(VarDef varDef) {
+		var ctx = varDef.getCtx();
+		var type = varDef.getType();
+		var id = varDef.getId();
+
+		if (SymbolTable.isRedefinedInheritedAttribute(id)) {
+			SymbolTable.error(ctx, id.getToken(),
+					"Class " + id.getScope().toString() + " redefines inherited attribute " + id.getToken().getText());
+		}
 		return null;
 	}
 
+	@Override
+	public TypeSymbol visit(Type type) {
+		return null;
+	}
 }

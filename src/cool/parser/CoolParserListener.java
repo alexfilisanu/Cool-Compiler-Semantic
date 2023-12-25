@@ -240,18 +240,6 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitMultDiv(CoolParser.MultDivContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterSelf(CoolParser.SelfContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitSelf(CoolParser.SelfContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code block}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree

@@ -43,7 +43,6 @@ expr
     |   IS_VOID e=expr                                              # isvoid
     |   NOT e=expr                                                  # not
     |   LPAREN e=expr RPAREN                                        # paren
-    |   SELF                                                        # self
     |   ID                                                          # id
     |   INT                                                         # int
     |   BOOL                                                        # bool

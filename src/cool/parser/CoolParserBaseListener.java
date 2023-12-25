@@ -259,18 +259,6 @@ public class CoolParserBaseListener implements CoolParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSelf(CoolParser.SelfContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSelf(CoolParser.SelfContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBlock(CoolParser.BlockContext ctx) { }
 	/**
 	 * {@inheritDoc}

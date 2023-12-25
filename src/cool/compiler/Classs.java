@@ -5,22 +5,29 @@ import cool.parser.CoolParser;
 import java.util.List;
 
 public class Classs extends Expression {
-	private List<Expression> definitions;
 	private CoolParser.ClassContext ctx;
+	private Id id;
+	private List<Expression> definitions;
 
 	public Classs(CoolParser.ClassContext ctx,
-		   List<Expression> definitions) {
+				  Id id,
+				  List<Expression> definitions) {
 		super(ctx.start);
 		this.ctx = ctx;
+		this.id = id;
 		this.definitions = definitions;
-	}
-
-	public List<Expression> getDefinitions() {
-		return definitions;
 	}
 
 	public CoolParser.ClassContext getCtx() {
 		return ctx;
+	}
+
+	public Id getId() {
+		return id;
+	}
+
+	public List<Expression> getDefinitions() {
+		return definitions;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

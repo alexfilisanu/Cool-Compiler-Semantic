@@ -52,6 +52,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitClass(CoolParser.ClassContext ctx) {
 		return new Classs(ctx,
+				new Id(ctx.type),
 				ctx.definition().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
 	}
 
@@ -168,11 +169,6 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 	}
 
 	@Override
-	public ASTNode visitSelf(CoolParser.SelfContext ctx) {
-		return new Self(ctx.SELF().getSymbol());
-	}
-
-	@Override
 	public ASTNode visitString(CoolParser.StringContext ctx) {
 		return new Stringg(ctx.STRING().getSymbol());
 	}
@@ -180,13 +176,13 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitVarDef(CoolParser.VarDefContext ctx) {
 		return ctx.init != null
-				? new VarDef(ctx.name,
-				ctx.type,
-				(Expression) visit(ctx.init),
-				ctx.start)
-				: new VarDef(ctx.name,
-				ctx.type,
-				ctx.start);
+				? new VarDef(ctx,
+				new Type(ctx.type),
+				new Id(ctx.name),
+				(Expression) visit(ctx.init))
+				: new VarDef(ctx,
+				new Type(ctx.type),
+				new Id(ctx.name));
 	}
 
 	@Override

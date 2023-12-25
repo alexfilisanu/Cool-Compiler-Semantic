@@ -36,7 +36,6 @@ CLASS : 'class';
 INHERITS : 'inherits';
 NOT : 'not';
 IS_VOID : 'isvoid';
-SELF : 'self';
 
 fragment LOWERCASE : [a-z];
 fragment UPPERCASE : [A-Z];

@@ -133,15 +133,7 @@ public class Compiler {
             // Populate global scope.
             SymbolTable.defineBasicClasses();
 
-            // TODO Semantic analysis
-            // În vederea gestiunii referirilor anticipate, utilizăm două treceri,
-            // una de definire a simbolurilor, și cealaltă, de rezolvare.
             var definitionPassVisitor = new DefinitionPassVisitor();
-
-            // A doua trecere, pentru rezolvarea simbolurilor în raport cu domeniile
-            // de vizibilitate memorate în prima trecere. Observați că, în această
-            // trecere, nu mai este necesară gestiunea domeniului curent,
-            // ca în prima trecere.
             var resolutionPassVisitor = new ResolutionPassVisitor();
 
             ast.accept(definitionPassVisitor);

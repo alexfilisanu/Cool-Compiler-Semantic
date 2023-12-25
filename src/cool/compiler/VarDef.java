@@ -1,26 +1,44 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class VarDef extends Expression {
-	Token name;
-	Token type;
-	Expression init;
+	private CoolParser.VarDefContext ctx;
+	private Id id;
+	private Type type;
+	private Expression init;
 
-	VarDef(Token name,
-		   Token type,
-		   Token start) {
-		super(start);
-		this.name = name;
+	public VarDef(CoolParser.VarDefContext ctx,
+				  Type type,
+				  Id id) {
+		super(ctx.start);
+		this.ctx = ctx;
 		this.type = type;
+		this.id = id;
 	}
 
-	VarDef(Token name,
-		   Token type,
-		   Expression init,
-		   Token start) {
-		this(name, type, start);
+	public VarDef(CoolParser.VarDefContext ctx,
+				  Type type,
+				  Id id,
+				  Expression init) {
+		this(ctx, type, id);
 		this.init = init;
+	}
+
+	public CoolParser.VarDefContext getCtx() {
+		return ctx;
+	}
+
+	public Id getId() {
+		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public Expression getInit() {
+		return init;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

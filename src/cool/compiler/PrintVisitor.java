@@ -20,7 +20,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(BitwiseNot bitwiseNot) {
-		printIndent(bitwiseNot.token.getText());
+		printIndent(bitwiseNot.getToken().getText());
 
 		indent++;
 		bitwiseNot.e.accept(this);
@@ -42,7 +42,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Bool bool) {
-		printIndent(bool.token.getText());
+		printIndent(bool.getToken().getText());
 
 		return null;
 	}
@@ -52,7 +52,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("implicit dispatch");
 
 		indent++;
-		printIndent(call.token.getText());
+		printIndent(call.getToken().getText());
 		call.args.forEach(x -> x.accept(this));
 		indent--;
 
@@ -109,7 +109,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		if (Objects.nonNull(dispatch.type)) {
 			printIndent(dispatch.type.getText());
 		}
-		printIndent(dispatch.token.getText());
+		printIndent(dispatch.getToken().getText());
 		// sublist(1,) because e(first element of args) is already accepted before
 		dispatch.args.subList(1, dispatch.args.size())
 				.forEach(x -> x.accept(this));
@@ -148,7 +148,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Id id) {
-		printIndent(id.token.getText());
+		printIndent(id.getToken().getText());
 
 		return null;
 	}
@@ -168,14 +168,14 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Int intt) {
-		printIndent(intt.token.getText());
+		printIndent(intt.getToken().getText());
 
 		return null;
 	}
 
 	@Override
 	public Void visit(IsVoid isVoid) {
-		printIndent(isVoid.token.getText());
+		printIndent(isVoid.getToken().getText());
 
 		indent++;
 		isVoid.e.accept(this);
@@ -213,7 +213,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(MultDiv multDiv) {
-		printIndent(multDiv.token.getText());
+		printIndent(multDiv.getToken().getText());
 
 		indent++;
 		multDiv.left.accept(this);
@@ -225,7 +225,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(New neww) {
-		printIndent(neww.token.getText());
+		printIndent(neww.getToken().getText());
 
 		indent++;
 		printIndent(neww.name.getText());
@@ -236,7 +236,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Not not) {
-		printIndent(not.token.getText());
+		printIndent(not.getToken().getText());
 
 		indent++;
 		not.e.accept(this);
@@ -254,7 +254,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(PlusMinus plusMinus) {
-		printIndent(plusMinus.token.getText());
+		printIndent(plusMinus.getToken().getText());
 
 		indent++;
 		plusMinus.left.accept(this);
@@ -277,7 +277,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Relational relational) {
-		printIndent(relational.token.getText());
+		printIndent(relational.getToken().getText());
 
 		indent++;
 		relational.left.accept(this);
@@ -288,16 +288,9 @@ public class PrintVisitor implements ASTVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(Self self) {
-		printIndent(self.token.getText());
-
-		return null;
-	}
-
-	@Override
 	public Void visit(Stringg stringg) {
 		// replace for special characters
-		String interpretedString = stringg.token.getText()
+		String interpretedString = stringg.getToken().getText()
 				.replace("\\r", "")
 				.replace("\\t", "\t")
 				.replace("\\n", "\n")
@@ -315,14 +308,22 @@ public class PrintVisitor implements ASTVisitor<Void> {
 	}
 
 	@Override
+	public Void visit(Type type) {
+		printIndent(type.getToken().getText());
+
+		return null;
+	}
+
+	@Override
 	public Void visit(VarDef varDef) {
+		var ctx = varDef.getCtx();
 		printIndent("attribute");
 
 		indent++;
-		printIndent(varDef.name.getText());
-		printIndent(varDef.type.getText());
-		if (varDef.init != null) {
-			varDef.init.accept(this);
+		printIndent(ctx.name.getText());
+		printIndent(ctx.type.getText());
+		if (varDef.getInit() != null) {
+			varDef.getInit().accept(this);
 		}
 		indent--;
 

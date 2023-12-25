@@ -2,8 +2,8 @@ package cool.compiler;
 
 import org.antlr.v4.runtime.Token;
 
-public class Self extends Expression {
-	Self(Token token) {
+public class Type extends ASTNode {
+	public Type(Token token) {
 		super(token);
 	}
 

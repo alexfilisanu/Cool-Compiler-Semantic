@@ -25,8 +25,8 @@ public interface ASTVisitor<T> {
 	T visit(PlusMinus plusMinus);
 	T visit(Program program);
 	T visit(Relational relational);
-	T visit(Self self);
 	T visit(Stringg string);
+	T visit(Type type);
 	T visit(VarDef varDef);
 	T visit(While whilee);
 }
