@@ -1,6 +1,7 @@
 package cool.structures;
 
 import cool.compiler.Compiler;
+import cool.compiler.FuncDef;
 import cool.compiler.Id;
 import cool.parser.CoolParser;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -94,14 +95,11 @@ public class SymbolTable {
     }
 
     public static boolean isRedefinedInheritedAttribute(Id id) {
-        // check if var is redefined in inherited attributes
         var scope = id.getScope();
 
         while (scope != null) {
             var next = childToParentMap.get(scope.toString());
-//            var scoala = ((ClassSymbol)globals.lookup(next)).symbols.containsKey(id.getToken().getText());
 
-//            scope = globals.lookup(next);
             if (next == null || globals.lookup(next) instanceof TypeSymbol) {
                 return false;
             }
@@ -113,31 +111,97 @@ public class SymbolTable {
             scope = (ClassSymbol)globals.lookup(next);
         }
 
-//        if (globals.lookup(id.getText()) != null) {
-//            return true;
-//        }
-
-//        if (((ClassSymbol)globals.getParent()).vars.lookup(token.getText()) != null) {
-//            return true;
-//        }
-
-//        var current = token.getText();
-//
-//
-//        while (current != null) {
-//            var next = childToParentMap.get(current);
-//            if (next == null) {
-//                return false;
-//            }
-//
-//            if (next.equals(token.getText())) {
-//                return true;
-//            }
-//
-//            current = next;
-//        }
-//
         return false;
+    }
+
+    public static boolean isOverridingMethodWithDifferentNumberOfFormals(Id id) {
+        var scope = id.getScope();
+
+        while (scope != null) {
+            if (scope instanceof ClassSymbol) {
+                var next = childToParentMap.get(scope.toString());
+
+                if (next == null || globals.lookup(next) instanceof TypeSymbol) {
+                    return false;
+                }
+
+                if (((ClassSymbol) globals.lookup(next)).symbols.containsKey(id.getToken().getText())) {
+                    var method = (FunctionSymbol) ((ClassSymbol) globals.lookup(next)).symbols.get(id.getToken().getText());
+
+                    if (id.getSymbol() instanceof FunctionSymbol) {
+                        if (method.getFormals().size() != ((FunctionSymbol) id.getSymbol()).symbols.size()) {
+                            return true;
+                        }
+                    }
+                }
+                scope = (ClassSymbol)globals.lookup(next);
+            }
+            scope = scope.getParent();
+        }
+
+        return false;
+    }
+
+    public static Object[] isOverridingMethodWithDifferentTypeOfFormals(Id id) {
+        var result = new Object[]{false, null, null};
+        var scope = id.getScope();
+
+        while (scope != null) {
+            if (scope instanceof ClassSymbol) {
+                var next = childToParentMap.get(scope.toString());
+
+                if (next == null || globals.lookup(next) instanceof TypeSymbol) {
+                    return result;
+                }
+
+                if (((ClassSymbol) globals.lookup(next)).symbols.containsKey(id.getToken().getText())) {
+                    var method = (FunctionSymbol) ((ClassSymbol) globals.lookup(next)).symbols.get(id.getToken().getText());
+
+                    if (id.getSymbol() instanceof FunctionSymbol) {
+                        var formals = ((FunctionSymbol)((ClassSymbol) scope).symbols.get(id.getToken().getText())).symbols.values().toArray();
+                        var methodFormals = method.symbols.values().toArray();
+
+                        for (int i = 0; i < formals.length; i++) {
+                            if (!((IdSymbol)formals[i]).getType().equals(((IdSymbol)methodFormals[i]).getType())) {
+                                return new Object[]{true, methodFormals[i], formals[i]};
+                            }
+                        }
+                    }
+                }
+                scope = (ClassSymbol)globals.lookup(next);
+            }
+            scope = scope.getParent();
+        }
+
+        return result;
+    }
+
+    public static Object[] isOverridingMethodWithDifferentReturnType(Id id) {
+        var result = new Object[]{false, null, null};
+        var scope = id.getScope();
+
+        while (scope != null) {
+            if (scope instanceof ClassSymbol) {
+                var next = childToParentMap.get(scope.toString());
+
+                if (next == null || globals.lookup(next) instanceof TypeSymbol) {
+                    return result;
+                }
+
+                if (((ClassSymbol) globals.lookup(next)).symbols.containsKey(id.getToken().getText())) {
+                    var method = (FunctionSymbol) ((ClassSymbol) globals.lookup(next)).symbols.get(id.getToken().getText());
+
+                    if (id.getSymbol() instanceof FunctionSymbol) {
+                        if (!((FunctionSymbol) id.getSymbol()).getType().equals(method.getType())) {
+                            return new Object[]{true, method.getType(), ((FunctionSymbol) id.getSymbol()).getType()};
+                        }
+                    }
+                }
+                scope = (ClassSymbol)globals.lookup(next);
+            }
+            scope = scope.getParent();
+        }
+        return result;
     }
 
     public static boolean hasSemanticErrors() {

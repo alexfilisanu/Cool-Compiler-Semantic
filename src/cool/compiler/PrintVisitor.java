@@ -120,11 +120,12 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Formal formal) {
+		var ctx = formal.getCtx();
 		printIndent("formal");
 
 		indent++;
-		printIndent(formal.name.getText());
-		printIndent(formal.type.getText());
+		printIndent(ctx.name.getText());
+		printIndent(ctx.type.getText());
 		indent--;
 
 		return null;
@@ -132,14 +133,15 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(FuncDef funcDef) {
+		var ctx = funcDef.getCtx();
 		printIndent("method");
 
 		indent++;
-		printIndent(funcDef.name.getText());
-		funcDef.params.forEach(definition -> definition.accept(this));
-		printIndent(funcDef.type.getText());
-		if (Objects.nonNull(funcDef.body)) {
-			funcDef.body.accept(this);
+		printIndent(ctx.name.getText());
+		funcDef.getParams().forEach(definition -> definition.accept(this));
+		printIndent(ctx.type.getText());
+		if (Objects.nonNull(funcDef.getBody())) {
+			funcDef.getBody().accept(this);
 		}
 		indent--;
 

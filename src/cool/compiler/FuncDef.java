@@ -1,25 +1,47 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 import java.util.List;
 
 public class FuncDef extends Expression {
-	Token name;
-	Token type;
-	List<Formal> params;
-	Expression body;
+	private CoolParser.FuncDefContext ctx;
+	private Id id;
+	private Type type;
+	private List<Formal> params;
+	private Expression body;
 
-	FuncDef(Token name,
-		    Token type,
-		    List<Formal> params,
-			Expression body,
-			Token start) {
-		super(start);
-		this.name = name;
+	public FuncDef(CoolParser.FuncDefContext ctx,
+				   Id id,
+				   Type type,
+				   List<Formal> params,
+				   Expression body) {
+		super(ctx.start);
+		this.ctx = ctx;
+		this.id = id;
 		this.type = type;
 		this.params = params;
 		this.body = body;
+	}
+
+	public CoolParser.FuncDefContext getCtx() {
+		return ctx;
+	}
+
+	public Id getId() {
+		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public List<Formal> getParams() {
+		return params;
+	}
+
+	public Expression getBody() {
+		return body;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

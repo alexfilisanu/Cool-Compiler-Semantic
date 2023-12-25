@@ -152,6 +152,42 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(FuncDef funcDef) {
+		var ctx = funcDef.getCtx();
+		var id = funcDef.getId();
+		var type = funcDef.getType();
+
+		if (SymbolTable.isOverridingMethodWithDifferentNumberOfFormals(id)) {
+			SymbolTable.error(ctx, id.getToken(),
+					"Class " + id.getScope().getParent().toString() + " overrides method "
+							+ id.getToken().getText() + " with different number of formal parameters");
+			return null;
+		}
+
+		Object[] result = SymbolTable.isOverridingMethodWithDifferentTypeOfFormals(id);
+		if ((boolean)result[0]) {
+			var idSymbolName = ((IdSymbol) result[2]).getName();
+			var token = ctx.formals.stream()
+					.filter(x -> x.name.getText().equals(idSymbolName))
+					.findFirst()
+					.get();
+			SymbolTable.error(ctx, token.type,
+					"Class " + id.getScope().getParent().toString() + " overrides method "
+							+ id.getToken().getText() + " but changes type of formal parameter "
+							+ ((IdSymbol)result[2]).getName() + " from " + ((IdSymbol)result[1]).getType().getName()
+							+ " to " + ((IdSymbol)result[2]).getType().getName());
+			return null;
+		}
+
+		result = SymbolTable.isOverridingMethodWithDifferentReturnType(id);
+		if ((boolean)result[0]) {
+			SymbolTable.error(ctx, ctx.type,
+					"Class " + id.getScope().getParent().toString() + " overrides method "
+							+ id.getToken().getText() + " but changes return type from "
+							+ ((TypeSymbol)result[1]).getName() + " to "
+							+ ((TypeSymbol)result[2]).getName());
+			return null;
+		}
+
 		return null;
 	}
 

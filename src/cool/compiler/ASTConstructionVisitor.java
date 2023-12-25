@@ -66,18 +66,18 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitFormal(CoolParser.FormalContext ctx) {
-		return new Formal(ctx.name,
-				ctx.type,
-				ctx.start);
+		return new Formal(ctx,
+				new Id(ctx.name),
+				new Type(ctx.type));
 	}
 
 	@Override
 	public ASTNode visitFuncDef(CoolParser.FuncDefContext ctx) {
-		return new FuncDef(ctx.name,
-				ctx.type,
+		return new FuncDef(ctx,
+				new Id(ctx.name),
+				new Type(ctx.type),
 				ctx.formals.stream().map(x -> (Formal) visit(x)).collect(Collectors.toList()),
-				(Expression)visit(ctx.body),
-				ctx.start);
+				(Expression)visit(ctx.body));
 	}
 
 	@Override
