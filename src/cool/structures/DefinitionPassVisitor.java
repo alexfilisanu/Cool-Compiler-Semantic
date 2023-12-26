@@ -72,6 +72,10 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 			return null;
 		}
 
+		if (letVar.getInit() != null) {
+			letVar.getInit().accept(this);
+		}
+
 		return null;
 	}
 
@@ -97,6 +101,8 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(PlusMinus plusMinus) {
+		plusMinus.getLeft().accept(this);
+		plusMinus.getRight().accept(this);
 		return null;
 	}
 
@@ -127,16 +133,16 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Case casee) {
-		Scope oldScope = currentScope;
-		currentScope = new DefaultScope(currentScope);
+//		Scope oldScope = currentScope;
+//		currentScope = new DefaultScope(currentScope);
 
-		for(var caseStatement : casee.getCaseStatements()) {
+		for (var caseStatement : casee.getCaseStatements()) {
 			caseStatement.accept(this);
 		}
 
 		casee.getE().accept(this);
 
-		currentScope = oldScope;
+//		currentScope = oldScope;
 		return null;
 	}
 
@@ -149,6 +155,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 	public Void visit(CaseStatement caseStatement) {
 		var ctx = caseStatement.getCtx();
 		var name = ctx.name;
+		var id = caseStatement.getId();
 		var type = caseStatement.getType();
 
 		if (name.getText().equals("self")) {
@@ -168,6 +175,10 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 					"Case variable " + name.getText() + " has undefined type " + type.getToken().getText());
 			return null;
 		}
+
+		var caseSymbol = new IdSymbol(id.getToken().getText());
+		id.setSymbol(caseSymbol);
+		id.setScope(currentScope);
 
 		return null;
 	}
@@ -194,12 +205,12 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		classs.getId().setScope(currentScope);
 		classs.getId().setSymbol(childClassSymbol);
 
-		SymbolTable.globals.add(childClassSymbol);
 		if (parent != null) {
 			SymbolTable.childToParentMap.put(child.getText(), parent.getText());
 		} else {
 			SymbolTable.childToParentMap.put(child.getText(), null);
 		}
+		currentScope.getParent().add(new TypeSymbol(childClassSymbol.name));
 
 		var definitions = classs.getDefinitions();
 		for (var def : definitions) {
@@ -306,14 +317,15 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
 //			ASTVisitor.error(type.getToken(),
 //					id.getToken().getText() + " does not exist");
+
 			return null;
 		}
 
 		// Reținem informația de tip în cadrul simbolului aferent funcției.
 		id.getSymbol().setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 
-		for (var formal: funcDef.getParams()) {
-			formal.accept(this);
+		for (var param: funcDef.getParams()) {
+			param.accept(this);
 		}
 
 		funcDef.getBody().accept(this);
@@ -324,6 +336,20 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Id id) {
+//		var symbol = (IdSymbol)currentScope.lookup(id.getToken().getText());
+
+		var symbol = new IdSymbol(id.getToken().getText());
+		id.setScope(currentScope);
+
+		// Semnalăm eroare dacă nu există.
+//		if (symbol == null) {
+//			ASTVisitor.error(id.getToken(),
+//					id.getToken().getText() + " undefined");
+//			return null;
+//		}
+
+		// Atașăm simbolul nodului din arbore.
+		id.setSymbol(symbol);
 		return null;
 	}
 

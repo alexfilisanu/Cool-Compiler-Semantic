@@ -261,8 +261,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(plusMinus.getToken().getText());
 
 		indent++;
-		plusMinus.left.accept(this);
-		plusMinus.right.accept(this);
+		plusMinus.getLeft().accept(this);
+		plusMinus.getRight().accept(this);
 		indent--;
 
 		return null;

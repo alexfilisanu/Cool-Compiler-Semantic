@@ -25,11 +25,18 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(LetVar letVar) {
+		if (letVar.getInit() != null) {
+			letVar.getInit().accept(this);
+		}
+
 		return null;
 	}
 
 	@Override
 	public TypeSymbol visit(PlusMinus plusMinus) {
+		plusMinus.getLeft().accept(this);
+		plusMinus.getRight().accept(this);
+
 		return null;
 	}
 
@@ -55,6 +62,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Let let) {
+		for(var letVar : let.getLetVars()) {
+			letVar.accept(this);
+		}
+
+		let.getBody().accept(this);
+
 		return null;
 	}
 
@@ -137,17 +150,28 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		// Verificăm dacă într-adevăr avem de-a face cu o variabilă
 		// sau cu o funcție, al doilea caz constituind eroare.
 		// Puteți folosi instanceof.
-		var symbol = id.getScope().lookup(id.getToken().getText());
-
-		if (symbol instanceof FunctionSymbol) {
-//			ASTVisitor.error(id.getToken(),
-//					id.getToken().getText() + " is not a variable");
+		if (id.getScope() == null || id.getToken().getText().equals("self")) {
 			return null;
 		}
 
+		var symbol = id.getScope().lookup(id.getToken().getText());
+		id.getScope().add(id.getSymbol());
+
+		if (symbol == null) {
+			SymbolTable.error(id.getCtx(), id.getToken(), "Undefined identifier " + id.getToken().getText());
+			return null;
+		}
+//
+//		if (symbol instanceof FunctionSymbol) {
+////			ASTVisitor.error(id.getToken(),
+////					id.getToken().getText() + " is not a variable");
+//			return null;
+//		}
+
 		// TODO 2: Întoarcem informația de tip salvată deja în simbol încă de la
 		// definirea variabilei.
-		return id.getSymbol().getType();
+//		return id.getSymbol().getType();
+		return null;
 	}
 
 	@Override
@@ -188,6 +212,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			return null;
 		}
 
+		for (var param : funcDef.getParams()) {
+			param.accept(this);
+		}
+
+		funcDef.getBody().accept(this);
+
 		return null;
 	}
 
@@ -198,6 +228,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Case casee) {
+		for (var caseStatement : casee.getCaseStatements()) {
+			caseStatement.accept(this);
+		}
+
+		casee.getE().accept(this);
+
 		return null;
 	}
 
