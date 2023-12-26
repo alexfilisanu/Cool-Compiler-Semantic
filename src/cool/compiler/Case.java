@@ -1,19 +1,33 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 import java.util.List;
 
 public class Case extends Expression {
-	Expression e;
-	List<CaseStatement> caseStatements;
+	private CoolParser.CaseContext ctx;
+	private Expression e;
+	private List<CaseStatement> caseStatements;
 
-	Case(Expression e,
-		 List<CaseStatement> caseStatements,
-		 Token start) {
-		super(start);
+	public Case(CoolParser.CaseContext ctx,
+				Expression e,
+		 		List<CaseStatement> caseStatements) {
+		super(ctx.start);
+		this.ctx = ctx;
 		this.e = e;
 		this.caseStatements = caseStatements;
+	}
+
+	public CoolParser.CaseContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getE() {
+		return e;
+	}
+
+	public List<CaseStatement> getCaseStatements() {
+		return caseStatements;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

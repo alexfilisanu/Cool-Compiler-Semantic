@@ -37,15 +37,16 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitCase(CoolParser.CaseContext ctx) {
-		return new Case((Expression)visit(ctx.e),
-				ctx.caseStatements.stream().map(x -> (CaseStatement) visit(x)).collect(Collectors.toList()),
-				ctx.start);
+		return new Case(ctx,
+				(Expression)visit(ctx.e),
+				ctx.caseStatements.stream().map(x -> (CaseStatement) visit(x)).collect(Collectors.toList()));
 	}
 
 	@Override
 	public ASTNode visitCaseStatement(CoolParser.CaseStatementContext ctx) {
-		return new CaseStatement(ctx.name,
-				ctx.type,
+		return new CaseStatement(ctx,
+				new Id(ctx.name),
+				new Type(ctx.type),
 				(Expression) visit(ctx.init));
 	}
 
@@ -106,21 +107,16 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitLet(CoolParser.LetContext ctx) {
-		return new Let(ctx.letVars.stream().map(x -> (LetVar) visit(x)).collect(Collectors.toList()),
-				(Expression)visit(ctx.body),
-				ctx.start);
+		return new Let(ctx,
+				ctx.letVars.stream().map(x -> (LetVar) visit(x)).collect(Collectors.toList()),
+				(Expression)visit(ctx.body));
 	}
 
 	@Override
 	public ASTNode visitLetVar(CoolParser.LetVarContext ctx) {
 		return ctx.init != null
-				? new LetVar(ctx.name,
-				ctx.type,
-				(Expression) visit(ctx.init),
-				ctx.start)
-				: new LetVar(ctx.name,
-				ctx.type,
-				ctx.start);
+				? new LetVar(ctx, new Id(ctx.name), new Type(ctx.type), (Expression) visit(ctx.init))
+				: new LetVar(ctx, new Id(ctx.name), new Type(ctx.type));
 	}
 
 	@Override

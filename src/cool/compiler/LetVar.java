@@ -1,26 +1,44 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class LetVar extends Expression {
-	Token name;
-	Token type;
-	Expression init;
+	private CoolParser.LetVarContext ctx;
+	private Id id;
+	private Type type;
+	private Expression init;
 
-	LetVar(Token name,
-		   Token type,
-		   Token start) {
-		super(start);
-		this.name = name;
+	public LetVar(CoolParser.LetVarContext ctx,
+		   Id id,
+		   Type type) {
+		super(ctx.start);
+		this.ctx = ctx;
+		this.id = id;
 		this.type = type;
 	}
 
-	LetVar(Token name,
-		   Token type,
-		   Expression init,
-		   Token start) {
-		this(name, type, start);
+	public LetVar(CoolParser.LetVarContext ctx,
+		   Id id,
+		   Type type,
+		   Expression init) {
+		this(ctx, id, type);
 		this.init = init;
+	}
+
+	public CoolParser.LetVarContext getCtx() {
+		return ctx;
+	}
+
+	public Id getId() {
+		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public Expression getInit() {
+		return init;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

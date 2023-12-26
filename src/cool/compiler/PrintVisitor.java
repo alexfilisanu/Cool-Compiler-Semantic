@@ -64,8 +64,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("case");
 
 		indent++;
-		casee.e.accept(this);
-		casee.caseStatements.forEach(caseStatement -> caseStatement.accept(this));
+		casee.getE().accept(this);
+		casee.getCaseStatements().forEach(caseStatement -> caseStatement.accept(this));
 		indent--;
 
 		return null;
@@ -73,12 +73,13 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(CaseStatement caseStatement) {
+		var ctx = caseStatement.getCtx();
 		printIndent("case branch");
 
 		indent++;
-		printIndent(caseStatement.name.getText());
-		printIndent(caseStatement.type.getText());
-		caseStatement.init.accept(this);
+		printIndent(ctx.name.getText());
+		printIndent(ctx.type.getText());
+		caseStatement.getInit().accept(this);
 		indent--;
 
 		return null;
@@ -191,8 +192,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("let");
 
 		indent++;
-		let.letVars.forEach(varDef -> varDef.accept(this));
-		let.body.accept(this);
+		let.getLetVars().forEach(varDef -> varDef.accept(this));
+		let.getBody().accept(this);
 		indent--;
 
 		return null;
@@ -200,13 +201,14 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(LetVar letVar) {
+		var ctx = letVar.getCtx();
 		printIndent("local");
 
 		indent++;
-		printIndent(letVar.name.getText());
-		printIndent(letVar.type.getText());
-		if (letVar.init != null) {
-			letVar.init.accept(this);
+		printIndent(ctx.name.getText());
+		printIndent(ctx.type.getText());
+		if (letVar.getInit() != null) {
+			letVar.getInit().accept(this);
 		}
 		indent--;
 
