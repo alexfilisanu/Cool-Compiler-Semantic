@@ -1,14 +1,24 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class Not extends Expression {
-	Expression e;
+	private CoolParser.NotContext ctx;
+	private Expression e;
 
-	Not(Token token,
+	public Not(CoolParser.NotContext ctx,
 			   Expression e) {
-		super(token);
+		super(ctx.NOT().getSymbol());
+		this.ctx = ctx;
 		this.e = e;
+	}
+
+	public CoolParser.NotContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getE() {
+		return e;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

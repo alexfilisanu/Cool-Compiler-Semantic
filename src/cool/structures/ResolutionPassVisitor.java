@@ -34,15 +34,32 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(PlusMinus plusMinus) {
-		plusMinus.getLeft().accept(this);
-		plusMinus.getRight().accept(this);
+		var exprTypeLeft = plusMinus.getLeft().accept(this);
+		var exprTypeRight = plusMinus.getRight().accept(this);
 
-		return null;
+		if (exprTypeLeft == null || exprTypeRight == null) {
+			return null;
+		}
+
+		if (exprTypeLeft != TypeSymbol.INT) {
+			SymbolTable.error(plusMinus.getCtx(), plusMinus.getLeft().getToken(),
+					"Operand of " + plusMinus.getToken().getText() + " has type " + exprTypeLeft.getName() + " instead of Int");
+//			return null;
+		}
+
+		if (exprTypeRight != TypeSymbol.INT) {
+			SymbolTable.error(plusMinus.getCtx(), plusMinus.getRight().getToken(),
+					"Operand of " + plusMinus.getToken().getText() + " has type " + exprTypeRight.getName() + " instead of Int");
+//			return null;
+		}
+
+		return TypeSymbol.INT;
 	}
 
 	@Override
 	public TypeSymbol visit(Paren paren) {
-		return null;
+		var type = paren.getE().accept(this);
+		return type;
 	}
 
 	@Override
@@ -57,7 +74,26 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(MultDiv multDiv) {
-		return null;
+		var exprTypeLeft = multDiv.getLeft().accept(this);
+		var exprTypeRight = multDiv.getRight().accept(this);
+
+		if (exprTypeLeft == null || exprTypeRight == null) {
+			return null;
+		}
+
+		if (exprTypeLeft != TypeSymbol.INT) {
+			SymbolTable.error(multDiv.getCtx(), multDiv.getLeft().getToken(),
+					"Operand of " + multDiv.getToken().getText() + " has type " + exprTypeLeft.getName() + " instead of Int");
+//			return null;
+		}
+
+		if (exprTypeRight != TypeSymbol.INT) {
+			SymbolTable.error(multDiv.getCtx(), multDiv.getRight().getToken(),
+					"Operand of " + multDiv.getToken().getText() + " has type " + exprTypeRight.getName() + " instead of Int");
+//			return null;
+		}
+
+		return TypeSymbol.INT;
 	}
 
 	@Override
@@ -83,7 +119,19 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(BitwiseNot bitwiseNot) {
-		return null;
+		var exprType = bitwiseNot.getE().accept(this);
+
+		if (exprType == null) {
+			return null;
+		}
+
+		if (exprType != TypeSymbol.INT) {
+			SymbolTable.error(bitwiseNot.getCtx(), bitwiseNot.getE().getToken(),
+					"Operand of " + bitwiseNot.getToken().getText() + " has type " + exprType.getName() + " instead of Int");
+//			return null;
+		}
+
+		return TypeSymbol.INT;
 	}
 
 	@Override
@@ -154,23 +202,26 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			return null;
 		}
 
+		if (id.getSymbol().getName().equals("true") || id.getSymbol().getName().equals("false")) {
+			return TypeSymbol.BOOL;
+		}
+
 		var symbol = id.getScope().lookup(id.getToken().getText());
-		id.getScope().add(id.getSymbol());
+		if (id.getSymbol() != null) {
+			id.getScope().add(id.getSymbol());
+		}
 
 		if (symbol == null) {
 			SymbolTable.error(id.getCtx(), id.getToken(), "Undefined identifier " + id.getToken().getText());
 			return null;
 		}
-//
-//		if (symbol instanceof FunctionSymbol) {
-////			ASTVisitor.error(id.getToken(),
-////					id.getToken().getText() + " is not a variable");
-//			return null;
-//		}
 
 		// TODO 2: Întoarcem informația de tip salvată deja în simbol încă de la
 		// definirea variabilei.
-//		return id.getSymbol().getType();
+		if (id.getSymbol() != null) {
+			return id.getSymbol().getType();
+		}
+
 		return null;
 	}
 
@@ -261,7 +312,13 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		if (SymbolTable.isRedefinedInheritedAttribute(id)) {
 			SymbolTable.error(ctx, id.getToken(),
 					"Class " + id.getScope().toString() + " redefines inherited attribute " + id.getToken().getText());
+			return null;
 		}
+
+		if (varDef.getInit() != null) {
+			varDef.getInit().accept(this);
+		}
+
 		return null;
 	}
 

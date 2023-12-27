@@ -23,7 +23,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(bitwiseNot.getToken().getText());
 
 		indent++;
-		bitwiseNot.e.accept(this);
+		bitwiseNot.getE().accept(this);
 		indent--;
 
 		return null;
@@ -220,8 +220,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(multDiv.getToken().getText());
 
 		indent++;
-		multDiv.left.accept(this);
-		multDiv.right.accept(this);
+		multDiv.getLeft().accept(this);
+		multDiv.getRight().accept(this);
 		indent--;
 
 		return null;
@@ -243,7 +243,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(not.getToken().getText());
 
 		indent++;
-		not.e.accept(this);
+		not.getE().accept(this);
 		indent--;
 
 		return null;
@@ -251,7 +251,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Paren paren) {
-		paren.e.accept(this);
+		paren.getE().accept(this);
 
 		return null;
 	}

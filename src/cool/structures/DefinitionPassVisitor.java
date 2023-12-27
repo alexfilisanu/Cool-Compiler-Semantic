@@ -81,6 +81,8 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(MultDiv multDiv) {
+		multDiv.getLeft().accept(this);
+		multDiv.getRight().accept(this);
 		return null;
 	}
 
@@ -96,6 +98,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Paren paren) {
+		paren.getE().accept(this);
 		return null;
 	}
 
@@ -113,6 +116,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(BitwiseNot bitwiseNot) {
+		bitwiseNot.getE().accept(this);
 		return null;
 	}
 
@@ -177,6 +181,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		}
 
 		var caseSymbol = new IdSymbol(id.getToken().getText());
+		caseSymbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 		id.setSymbol(caseSymbol);
 		id.setScope(currentScope);
 
@@ -264,6 +269,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 			return null;
 		}
 
+		symbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 		id.setSymbol(symbol);
 		id.setScope(currentScope);
 
@@ -308,6 +314,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 			return null;
 		}
 
+		functionSymbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 		id.setSymbol(functionSymbol);
 		id.setScope(currentScope);
 
@@ -337,16 +344,13 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 	@Override
 	public Void visit(Id id) {
 //		var symbol = (IdSymbol)currentScope.lookup(id.getToken().getText());
-
 		var symbol = new IdSymbol(id.getToken().getText());
+		if (currentScope.lookup(id.getToken().getText()) != null) {
+			symbol.setType(((IdSymbol) currentScope.lookup(id.getToken().getText())).getType());
+		}
 		id.setScope(currentScope);
 
 		// Semnalăm eroare dacă nu există.
-//		if (symbol == null) {
-//			ASTVisitor.error(id.getToken(),
-//					id.getToken().getText() + " undefined");
-//			return null;
-//		}
 
 		// Atașăm simbolul nodului din arbore.
 		id.setSymbol(symbol);

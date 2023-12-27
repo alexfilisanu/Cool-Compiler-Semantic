@@ -1,17 +1,31 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class MultDiv extends Expression {
-	Expression left;
-	Expression right;
+	private CoolParser.MultDivContext ctx;
+	private Expression left;
+	private Expression right;
 
-	MultDiv(Expression left,
-			Token op,
-			Expression right) {
-		super(op);
+	public MultDiv(CoolParser.MultDivContext ctx,
+				   Expression left,
+				   Expression right) {
+		super(ctx.op);
+		this.ctx = ctx;
 		this.left = left;
 		this.right = right;
+	}
+
+	public CoolParser.MultDivContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getLeft() {
+		return left;
+	}
+
+	public Expression getRight() {
+		return right;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

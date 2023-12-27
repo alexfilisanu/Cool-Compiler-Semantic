@@ -14,7 +14,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitBitwiseNot(CoolParser.BitwiseNotContext ctx) {
-		return new BitwiseNot(ctx.TILDE().getSymbol(),
+		return new BitwiseNot(ctx,
 				(Expression)visit(ctx.e));
 	}
 
@@ -121,8 +121,8 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitMultDiv(CoolParser.MultDivContext ctx) {
-		return new MultDiv((Expression)visit(ctx.left),
-				ctx.op,
+		return new MultDiv(ctx,
+				(Expression)visit(ctx.left),
 				(Expression)visit(ctx.right));
 	}
 
@@ -134,7 +134,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitNot(CoolParser.NotContext ctx) {
-		return new BitwiseNot(ctx.NOT().getSymbol(),
+		return new Not(ctx,
 				(Expression)visit(ctx.e));
 	}
 
@@ -146,8 +146,8 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitPlusMinus(CoolParser.PlusMinusContext ctx) {
-		return new PlusMinus((Expression)visit(ctx.left),
-				ctx.op,
+		return new PlusMinus(ctx,
+				(Expression)visit(ctx.left),
 				(Expression)visit(ctx.right));
 	}
 
