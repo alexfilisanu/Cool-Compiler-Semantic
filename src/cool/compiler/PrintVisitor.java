@@ -284,8 +284,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(relational.getToken().getText());
 
 		indent++;
-		relational.left.accept(this);
-		relational.right.accept(this);
+		relational.getLeft().accept(this);
+		relational.getRight().accept(this);
 		indent--;
 
 		return null;

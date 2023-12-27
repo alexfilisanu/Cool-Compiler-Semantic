@@ -1,17 +1,31 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class Relational extends Expression {
-	Expression left;
-	Expression right;
+	private CoolParser.RelationalContext ctx;
+	private Expression left;
+	private Expression right;
 
-	Relational(Expression left,
-			   Token op,
+	Relational(CoolParser.RelationalContext ctx,
+			   Expression left,
 			   Expression right) {
-		super(op);
+		super(ctx.op);
+		this.ctx = ctx;
 		this.left = left;
 		this.right = right;
+	}
+
+	public CoolParser.RelationalContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getLeft() {
+		return left;
+	}
+
+	public Expression getRight() {
+		return right;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

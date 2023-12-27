@@ -15,7 +15,24 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Relational relational) {
-		return null;
+		var exprTypeLeft = relational.getLeft().accept(this);
+		var exprTypeRight = relational.getRight().accept(this);
+
+		if (exprTypeLeft == null || exprTypeRight == null) {
+			return null;
+		}
+
+		if (exprTypeLeft != exprTypeRight) {
+			if (relational.getToken().getText().equals("=")) {
+				SymbolTable.error(relational.getCtx(), relational.getToken(),
+						"Cannot compare " + exprTypeLeft.getName() + " with " + exprTypeRight.getName());
+			} else {
+				SymbolTable.error(relational.getCtx(), relational.getRight().getToken(),
+						"Operand of " + relational.getToken().getText() + " has type " + exprTypeRight.getName() + " instead of " + exprTypeLeft.getName());
+			}
+		}
+
+		return TypeSymbol.BOOL;
 	}
 
 	@Override
@@ -64,7 +81,19 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Not not) {
-		return null;
+		var exprType = not.getE().accept(this);
+
+		if (exprType == null) {
+			return null;
+		}
+
+		if (exprType != TypeSymbol.BOOL) {
+			SymbolTable.error(not.getCtx(), not.getE().getToken(),
+					"Operand of " + not.getToken().getText() + " has type " + exprType.getName() + " instead of Bool");
+//			return null;
+		}
+
+		return TypeSymbol.BOOL;
 	}
 
 	@Override
@@ -308,6 +337,15 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		var ctx = varDef.getCtx();
 		var type = varDef.getType();
 		var id = varDef.getId();
+
+		if (id.getScope() != null) {
+			if (id.getScope().lookup(type.getToken().getText()) == null) {
+				SymbolTable.error(ctx, type.getToken(),
+						"Class " + id.getScope().toString() + " has attribute " + ctx.name.getText()
+								+ " with undefined type " + type.getToken().getText());
+				return null;
+			}
+		}
 
 		if (SymbolTable.isRedefinedInheritedAttribute(id)) {
 			SymbolTable.error(ctx, id.getToken(),

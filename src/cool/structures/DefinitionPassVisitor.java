@@ -26,6 +26,8 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Relational relational) {
+		relational.getLeft().accept(this);
+		relational.getRight().accept(this);
 		return null;
 	}
 
@@ -93,6 +95,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Not not) {
+		not.getE().accept(this);
 		return null;
 	}
 
@@ -398,12 +401,12 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		// TODO 1: Reținem informația de tip în simbolul nou creat.
 		// Căutăm tipul variabilei.
 		// Semnalăm eroare dacă nu există.
-		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
-			SymbolTable.error(ctx, type.getToken(),
-					"Class " + currentScope.toString() + " has attribute " + name.getText()
-							+ " with undefined type " + type.getToken().getText());
-			return null;
-		}
+//		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
+//			SymbolTable.error(ctx, type.getToken(),
+//					"Class " + currentScope.toString() + " has attribute " + name.getText()
+//							+ " with undefined type " + type.getToken().getText());
+//			return null;
+//		}
 
 		// Reținem informația de tip în cadrul simbolului aferent
 		// variabilei
