@@ -161,9 +161,9 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("if");
 
 		indent++;
-		iff.cond.accept(this);
-		iff.thenBranch.accept(this);
-		iff.elseBranch.accept(this);
+		iff.getCond().accept(this);
+		iff.getThenBranch().accept(this);
+		iff.getElseBranch().accept(this);
 		indent--;
 
 		return null;

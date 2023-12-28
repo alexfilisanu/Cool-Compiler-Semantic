@@ -89,10 +89,10 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitIf(CoolParser.IfContext ctx) {
-		return new If((Expression)visit(ctx.cond),
+		return new If(ctx,
+				(Expression)visit(ctx.cond),
 				(Expression)visit(ctx.thenBranch),
-				(Expression)visit(ctx.elseBranch),
-				ctx.start);
+				(Expression)visit(ctx.elseBranch));
 	}
 
 	@Override

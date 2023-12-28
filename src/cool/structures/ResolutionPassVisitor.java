@@ -271,7 +271,21 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(If iff) {
-		return null;
+		var ctx = iff.getCtx();
+		var condType = iff.getCond().accept(this);
+		var thenType = iff.getThenBranch().accept(this);
+		var elseType = iff.getElseBranch().accept(this);
+
+		if (condType != TypeSymbol.BOOL) {
+			SymbolTable.error(ctx, iff.getCond().getToken(), "If condition has type " + condType.getName() + " instead of Bool");
+		}
+
+		if (thenType.getName().equals(elseType.getName())
+				|| iff.getCond().getToken().getText().equals("true")) {
+			return thenType;
+		} else {
+			return TypeSymbol.OBJECT; //elseType;
+		}
 	}
 
 	@Override

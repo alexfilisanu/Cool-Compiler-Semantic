@@ -1,20 +1,38 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class If extends Expression {
-	Expression cond;
-	Expression thenBranch;
-	Expression elseBranch;
+	private CoolParser.IfContext ctx;
+	private Expression cond;
+	private Expression thenBranch;
+	private Expression elseBranch;
 
-	If(Expression cond,
-	   Expression thenBranch,
-	   Expression elseBranch,
-	   Token start) {
-		super(start);
+	public If(CoolParser.IfContext ctx,
+			  Expression cond,
+			  Expression thenBranch,
+			  Expression elseBranch) {
+		super(ctx.start);
+		this.ctx = ctx;
 		this.cond = cond;
 		this.thenBranch = thenBranch;
 		this.elseBranch = elseBranch;
+	}
+
+	public CoolParser.IfContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getCond() {
+		return cond;
+	}
+
+	public Expression getThenBranch() {
+		return thenBranch;
+	}
+
+	public Expression getElseBranch() {
+		return elseBranch;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {
