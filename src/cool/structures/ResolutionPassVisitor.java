@@ -2,6 +2,8 @@ package cool.structures;
 
 import cool.compiler.*;
 
+import java.util.Objects;
+
 public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
@@ -102,7 +104,15 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(New neww) {
-		return null;
+		var ctx = neww.getCtx();
+		var type = neww.getType();
+
+		if (SymbolTable.globals.lookup(type.getToken().getText()) == null) {
+			SymbolTable.error(ctx, type.getToken(), "new is used with undefined type " + type.getToken().getText());
+			return null;
+		}
+
+		return ((IdSymbol) SymbolTable.globals.lookup(type.getToken().getText())).getType();
 	}
 
 	@Override
@@ -158,7 +168,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			return null;
 		}
 
-		if (idType != exprType && !SymbolTable.isInheritedClass(exprType, idType)) {
+		if (!idType.getName().equals(exprType.getName()) && !SymbolTable.isInheritedClass(exprType, idType)) {
 			SymbolTable.error(assign.getCtx(), assign.getValue().getToken(),
 					"Type " + exprType.getName() + " of assigned expression is incompatible with declared type "
 							+ idType.getName() + " of identifier " + assign.getId().getToken().getText());
@@ -236,7 +246,27 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Formal formal) {
-		return null;
+		var ctx = formal.getCtx();
+		var name = ctx.name;
+		var id   = formal.getId();
+		var type = formal.getType();
+
+		if (id.getScope() != null) {
+			if (Objects.isNull(id.getScope().lookup(type.getToken().getText()))) {
+				SymbolTable.error(ctx, type.getToken(),
+						"Method " + id.getScope().toString() + " of class " + id.getScope().getParent().toString()
+							+ " has formal parameter " + name.getText() + " with undefined type " + type.getToken().getText());
+				return null;
+			}
+
+			id.getSymbol().setType((TypeSymbol) id.getScope().lookup(type.getToken().getText()));
+		}
+
+		if (id.getSymbol() != null) {
+			return id.getSymbol().getType();
+		} else {
+			return null;
+		}
 	}
 
 	@Override

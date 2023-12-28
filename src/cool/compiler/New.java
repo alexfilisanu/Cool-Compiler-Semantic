@@ -1,14 +1,24 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class New extends Expression {
-	Token name;
+	private CoolParser.NewContext ctx;
+	private Type type;
 
-	New(Token token,
-		Token name) {
-		super(token);
-		this.name = name;
+	public New(CoolParser.NewContext ctx,
+			   Type type) {
+		super(ctx.NEW().getSymbol());
+		this.ctx = ctx;
+		this.type = type;
+	}
+
+	public CoolParser.NewContext getCtx() {
+		return ctx;
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {

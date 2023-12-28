@@ -129,8 +129,8 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitNew(CoolParser.NewContext ctx) {
-		return new New(ctx.NEW().getSymbol(),
-				ctx.name);
+		return new New(ctx,
+				new Type(ctx.name));
 	}
 
 	@Override

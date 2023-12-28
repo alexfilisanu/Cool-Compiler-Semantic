@@ -219,6 +219,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		}
 
 		classs.getId().setScope(currentScope);
+		childClassSymbol.setType(new TypeSymbol(ctx.type.getText()));
 		classs.getId().setSymbol(childClassSymbol);
 
 		if (parent != null) {
@@ -261,12 +262,6 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 			SymbolTable.error(ctx, type.getToken(),
 					"Method " + currentScope.toString() + " of class " + currentScope.getParent().toString() + " has formal parameter " + name.getText() + " with illegal type SELF_TYPE");
 		}
-		//with undefined type
-		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
-			SymbolTable.error(ctx, type.getToken(),
-					"Method " + currentScope.toString() + " of class " + currentScope.getParent().toString() + " has formal parameter " + name.getText() + " with undefined type " + type.getToken().getText());
-		}
-
 
 //		if (SymbolTable.globals.lookup(n.type) == null) {
 //			SymbolTable.error(n.ctx, n.ctx.typeName, "Method " + ((MethodSymbol) currentScope).getName() + " of class " + ((ClassSymbol) ((MethodSymbol) currentScope).parent).getName() + " has formal parameter " + n.id + " with undefined type " + n.type);

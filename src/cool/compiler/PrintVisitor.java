@@ -232,7 +232,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(neww.getToken().getText());
 
 		indent++;
-		printIndent(neww.name.getText());
+		printIndent(neww.getType().getToken().getText());
 		indent--;
 
 		return null;
