@@ -9,6 +9,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitAssign(CoolParser.AssignContext ctx) {
 		return new Assign(ctx,
+				new Id(ctx.name),
 				(Expression)visit(ctx.value));
 	}
 

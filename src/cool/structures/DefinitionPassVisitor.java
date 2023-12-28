@@ -114,6 +114,14 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Assign assign) {
+		if (assign.getId().getToken().getText().equals("self")) {
+			SymbolTable.error(assign.getCtx(), assign.getId().getToken(),
+					"Cannot assign to self");
+			return null;
+		}
+
+		assign.getId().accept(this);
+		assign.getValue().accept(this);
 		return null;
 	}
 

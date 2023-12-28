@@ -1,7 +1,6 @@
 package cool.structures;
 
 import cool.compiler.Compiler;
-import cool.compiler.FuncDef;
 import cool.compiler.Id;
 import cool.parser.CoolParser;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -192,8 +191,8 @@ public class SymbolTable {
                     var method = (FunctionSymbol) ((ClassSymbol) globals.lookup(next)).symbols.get(id.getToken().getText());
 
                     if (id.getSymbol() instanceof FunctionSymbol) {
-                        if (!((FunctionSymbol) id.getSymbol()).getType().equals(method.getType())) {
-                            return new Object[]{true, method.getType(), ((FunctionSymbol) id.getSymbol()).getType()};
+                        if (!id.getSymbol().getType().equals(method.getType())) {
+                            return new Object[]{true, method.getType(), id.getSymbol().getType()};
                         }
                     }
                 }
@@ -202,6 +201,18 @@ public class SymbolTable {
             scope = scope.getParent();
         }
         return result;
+    }
+
+    public static boolean isInheritedClass(TypeSymbol childType, TypeSymbol parentType) {
+        var current = childToParentMap.get(childType.getName());
+        while (current != null) {
+            if (current.equals(parentType.getName())) {
+                return true;
+            }
+            current = childToParentMap.get(current);
+        }
+
+        return false;
     }
 
     public static boolean hasSemanticErrors() {

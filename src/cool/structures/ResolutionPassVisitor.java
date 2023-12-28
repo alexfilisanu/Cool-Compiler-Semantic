@@ -24,8 +24,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 		if (exprTypeLeft != exprTypeRight) {
 			if (relational.getToken().getText().equals("=")) {
-				SymbolTable.error(relational.getCtx(), relational.getToken(),
-						"Cannot compare " + exprTypeLeft.getName() + " with " + exprTypeRight.getName());
+				if ((exprTypeLeft == TypeSymbol.INT || exprTypeLeft == TypeSymbol.STRING
+						|| exprTypeLeft == TypeSymbol.BOOL) && (exprTypeRight == TypeSymbol.INT
+						|| exprTypeRight == TypeSymbol.STRING || exprTypeRight == TypeSymbol.BOOL)) {
+					SymbolTable.error(relational.getCtx(), relational.getToken(),
+							"Cannot compare " + exprTypeLeft.getName() + " with " + exprTypeRight.getName());
+				}
 			} else {
 				SymbolTable.error(relational.getCtx(), relational.getRight().getToken(),
 						"Operand of " + relational.getToken().getText() + " has type " + exprTypeRight.getName() + " instead of " + exprTypeLeft.getName());
@@ -143,7 +147,25 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Assign assign) {
-		return null;
+		var idType   = assign.getId().accept(this);
+		var exprType = assign.getValue().accept(this);
+
+		// TODO 5: Verificăm dacă expresia cu care se realizează atribuirea
+		// are tipul potrivit cu cel declarat pentru variabilă.
+		if (exprType == null) {
+//			ASTVisitor.error(assign.expr.getToken(),
+//					" Assignment with incompatible types " + idType.getName() + " NULL");
+			return null;
+		}
+
+		if (idType != exprType && !SymbolTable.isInheritedClass(exprType, idType)) {
+			SymbolTable.error(assign.getCtx(), assign.getValue().getToken(),
+					"Type " + exprType.getName() + " of assigned expression is incompatible with declared type "
+							+ idType.getName() + " of identifier " + assign.getId().getToken().getText());
+//			return null;
+		}
+
+		return idType;
 	}
 
 	@Override
@@ -247,11 +269,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 		// TODO 2: Întoarcem informația de tip salvată deja în simbol încă de la
 		// definirea variabilei.
-		if (id.getSymbol() != null) {
-			return id.getSymbol().getType();
-		}
+//		if (id.getSymbol() != null) {
+//			return id.getSymbol().getType();
+//		}
 
-		return null;
+		return ((IdSymbol) symbol).getType();
+//		return null;
 	}
 
 	@Override
@@ -353,8 +376,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			return null;
 		}
 
+		if (id.getScope() != null) {
+			id.getSymbol().setType((TypeSymbol) id.getScope().lookup(type.getToken().getText()));
+		}
 		if (varDef.getInit() != null) {
-			varDef.getInit().accept(this);
+			var varType = varDef.getInit().accept(this);
+//			id.getSymbol().setType(varType);
 		}
 
 		return null;
