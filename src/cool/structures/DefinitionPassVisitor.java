@@ -430,6 +430,8 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(While whilee) {
+		whilee.getCond().accept(this);
+		whilee.getBody().accept(this);
 		return null;
 	}
 

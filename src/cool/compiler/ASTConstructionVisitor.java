@@ -184,8 +184,8 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitWhile(CoolParser.WhileContext ctx) {
-		return new While((Expression)visit(ctx.cond),
-				(Expression)visit(ctx.body),
-				ctx.start);
+		return new While(ctx,
+				(Expression)visit(ctx.cond),
+				(Expression)visit(ctx.body));
 	}
 }

@@ -382,7 +382,15 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(While whilee) {
-		return null;
+		var ctx = whilee.getCtx();
+		var condType = whilee.getCond().accept(this);
+		var bodyType = whilee.getBody().accept(this);
+
+		if (condType != TypeSymbol.BOOL) {
+			SymbolTable.error(ctx, whilee.getCond().getToken(), "While condition has type " + condType.getName() + " instead of Bool");
+		}
+
+		return TypeSymbol.OBJECT;
 	}
 
 	@Override

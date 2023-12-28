@@ -339,8 +339,8 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("while");
 
 		indent++;
-		whilee.cond.accept(this);
-		whilee.body.accept(this);
+		whilee.getCond().accept(this);
+		whilee.getBody().accept(this);
 		indent--;
 
 		return null;

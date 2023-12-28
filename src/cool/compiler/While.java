@@ -1,17 +1,31 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.Token;
+import cool.parser.CoolParser;
 
 public class While extends Expression {
-	Expression cond;
-	Expression body;
+	private CoolParser.WhileContext ctx;
+	private Expression cond;
+	private Expression body;
 
-	While(Expression cond,
-		  Expression body,
-		  Token start) {
-		super(start);
+	public While(CoolParser.WhileContext ctx,
+				 Expression cond,
+		  		 Expression body) {
+		super(ctx.start);
+		this.ctx = ctx;
 		this.cond = cond;
 		this.body = body;
+	}
+
+	public CoolParser.WhileContext getCtx() {
+		return ctx;
+	}
+
+	public Expression getCond() {
+		return cond;
+	}
+
+	public Expression getBody() {
+		return body;
 	}
 
 	public <T> T accept(ASTVisitor<T> visitor) {
