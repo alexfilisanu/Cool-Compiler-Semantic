@@ -6,11 +6,11 @@ import cool.parser.CoolParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
+import java.awt.List;
 import java.io.File;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SymbolTable {
     public static Scope globals;
@@ -213,6 +213,19 @@ public class SymbolTable {
         }
 
         return false;
+    }
+
+    public static TypeSymbol getMostInheritedClass(ArrayList<TypeSymbol> typesList) {
+        var types = new ArrayList<>(typesList);
+        var current = types.get(0);
+
+        for (int i = 1; i < types.size(); i++) {
+            if (isInheritedClass(current, types.get(i))) {
+                current = types.get(i);
+            }
+        }
+
+        return current;
     }
 
     public static boolean hasSemanticErrors() {

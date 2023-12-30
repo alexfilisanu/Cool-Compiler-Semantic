@@ -2,7 +2,11 @@ package cool.structures;
 
 import cool.compiler.*;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
@@ -207,6 +211,24 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(CaseStatement caseStatement) {
+		if (caseStatement.getId().getScope() != null && caseStatement.getInit().getToken() != null) {
+			if (caseStatement.getInit() instanceof Int) {
+				return TypeSymbol.INT;
+			}
+
+			if (caseStatement.getInit() instanceof Bool) {
+				return TypeSymbol.BOOL;
+			}
+
+			if (caseStatement.getInit() instanceof Stringg) {
+				return TypeSymbol.STRING;
+			}
+
+			if (caseStatement.getId().getScope().lookup(caseStatement.getInit().getToken().getText()) != null) {
+				return ((IdSymbol) caseStatement.getId().getScope().lookup(caseStatement.getInit().getToken().getText())).getType();
+			}
+//			return caseStatement.getInit().accept(this);
+		}
 		return null;
 	}
 
@@ -375,13 +397,34 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Case casee) {
+		var eType = casee.getE().accept(this);
+
+//		if (eType != TypeSymbol.INT && eType != TypeSymbol.BOOL && eType != TypeSymbol.STRING) {
+//			return eType;
+//		}
+
+		Set<TypeSymbol> caseTypesPrimitives = new HashSet<>();
+		ArrayList<TypeSymbol> caseTypesList = new ArrayList<>();
 		for (var caseStatement : casee.getCaseStatements()) {
-			caseStatement.accept(this);
+			var caseType = caseStatement.accept(this);
+			if (eType == TypeSymbol.INT || eType == TypeSymbol.BOOL || eType == TypeSymbol.STRING) {
+				caseTypesPrimitives.add(caseType);
+				if (caseTypesPrimitives.size() > 1) {
+					return TypeSymbol.OBJECT;
+				}
+			} else {
+				caseTypesList.add(caseType);
+			}
 		}
 
-		casee.getE().accept(this);
+		if (caseTypesPrimitives.size() == 1) {
+			return eType;
+		} else {
+			return SymbolTable.getMostInheritedClass(caseTypesList);
+		}
 
-		return null;
+//		return null;
+//		return TypeSymbol.OBJECT;
 	}
 
 	@Override
