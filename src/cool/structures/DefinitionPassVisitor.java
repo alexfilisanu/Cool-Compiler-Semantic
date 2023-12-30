@@ -133,6 +133,9 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Block block) {
+		for (var expr : block.getExprs()) {
+			expr.accept(this);
+		}
 		return null;
 	}
 

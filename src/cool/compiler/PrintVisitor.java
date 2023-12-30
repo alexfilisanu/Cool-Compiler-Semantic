@@ -34,7 +34,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent("block");
 
 		indent++;
-		block.exprs.forEach(x -> x.accept(this));
+		block.getExprs().forEach(x -> x.accept(this));
 		indent--;
 
 		return null;

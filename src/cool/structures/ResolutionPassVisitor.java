@@ -52,6 +52,38 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(LetVar letVar) {
+		var ctx = letVar.getCtx();
+		var id = letVar.getId();
+		var type = letVar.getType();
+
+//		if (id.getScope() != null) {
+//			if (SymbolTable.globals.lookup(type.getToken().getText()) == null) {
+//				SymbolTable.error(ctx, type.getToken(),
+//						"Let variable " + ctx.name.getText() + " has undefined type " + type.getToken().getText());
+//				return null;
+//			}
+//
+////			id.getSymbol().setType((TypeSymbol) id.getScope().lookup(type.getToken().getText()));
+//		}
+
+//		if (letVar.getInit() != null) {
+//			if (letVar.getInit() instanceof Int) {
+//				return TypeSymbol.INT;
+//			}
+//
+//			if (letVar.getInit() instanceof Bool) {
+//				return TypeSymbol.BOOL;
+//			}
+//
+//			if (letVar.getInit() instanceof Stringg) {
+//				return TypeSymbol.STRING;
+//			}
+//
+//			if (letVar.getId().getScope() != null && letVar.getId().getScope().lookup(letVar.getInit().getToken().getText()) != null) {
+//				return ((IdSymbol) letVar.getId().getScope().lookup(letVar.getInit().getToken().getText())).getType();
+//			}
+//		}
+
 		if (letVar.getInit() != null) {
 			letVar.getInit().accept(this);
 		}
@@ -145,7 +177,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Let let) {
-		for(var letVar : let.getLetVars()) {
+		for (var letVar : let.getLetVars()) {
 			letVar.accept(this);
 		}
 
@@ -201,7 +233,12 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Block block) {
-		return null;
+		TypeSymbol type = null;
+		for (var expr : block.getExprs()) {
+			type = expr.accept(this);
+		}
+
+		return type;
 	}
 
 	@Override
@@ -270,7 +307,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 	public TypeSymbol visit(Formal formal) {
 		var ctx = formal.getCtx();
 		var name = ctx.name;
-		var id   = formal.getId();
+		var id = formal.getId();
 		var type = formal.getType();
 
 		if (id.getScope() != null) {
@@ -302,8 +339,9 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			SymbolTable.error(ctx, iff.getCond().getToken(), "If condition has type " + condType.getName() + " instead of Bool");
 		}
 
-		if (thenType.getName().equals(elseType.getName())
-				|| iff.getCond().getToken().getText().equals("true")) {
+		if (thenType != null
+				&& (thenType.getName().equals(elseType.getName())
+				|| iff.getCond().getToken().getText().equals("true"))) {
 			return thenType;
 		} else {
 			return TypeSymbol.OBJECT; //elseType;
@@ -329,7 +367,9 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		}
 
 		if (symbol == null) {
-			SymbolTable.error(id.getCtx(), id.getToken(), "Undefined identifier " + id.getToken().getText());
+			if (id.getCtx() != null) {
+				SymbolTable.error(id.getCtx(), id.getToken(), "Undefined identifier " + id.getToken().getText());
+			}
 			return null;
 		}
 
