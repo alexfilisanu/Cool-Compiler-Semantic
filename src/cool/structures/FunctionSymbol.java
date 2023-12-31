@@ -44,6 +44,11 @@ public class FunctionSymbol extends IdSymbol implements Scope {
 	}
 
 	@Override
+	public Symbol lookupLetVar(String str) {
+		return null;
+	}
+
+	@Override
 	public Scope getParent() {
 		return parent;
 	}

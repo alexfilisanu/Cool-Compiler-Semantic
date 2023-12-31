@@ -60,7 +60,11 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 	public Void visit(LetVar letVar) {
 		var ctx = letVar.getCtx();
 		var name = ctx.name;
+		var id = letVar.getId();
 		var type = letVar.getType();
+
+		var letVarSymbol = new IdSymbol(name.getText());
+		currentScope = new DefaultScope(currentScope);
 
 		if (name.getText().equals("self")) {
 			SymbolTable.error(ctx, name,
@@ -68,15 +72,21 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 			return null;
 		}
 
-		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
-			SymbolTable.error(ctx, type.getToken(),
-					"Let variable " + name.getText() + " has undefined type " + type.getToken().getText());
-			return null;
-		}
+		id.setSymbol(letVarSymbol);
+		id.setScope(currentScope);
+
+		// Reținem informația de tip în cadrul simbolului aferent
+		// variabilei
+//		letVarSymbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 
 		if (letVar.getInit() != null) {
 			letVar.getInit().accept(this);
 		}
+
+//		currentScope = oldScope;
+		currentScope.add(letVarSymbol);
+
+
 
 		return null;
 	}
@@ -179,19 +189,16 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		if (name.getText().equals("self")) {
 			SymbolTable.error(ctx, name,
 					"Case variable has illegal name self");
-			return null;
 		}
 
 		if (type.getToken().getText().equals("SELF_TYPE")) {
 			SymbolTable.error(ctx, type.getToken(),
 					"Case variable " + name.getText() + " has illegal type SELF_TYPE");
-			return null;
 		}
 
 		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
 			SymbolTable.error(ctx, type.getToken(),
 					"Case variable " + name.getText() + " has undefined type " + type.getToken().getText());
-			return null;
 		}
 
 		var caseSymbol = new IdSymbol(id.getToken().getText());
@@ -250,7 +257,7 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		// getScope() în a doua trecere.
 		var ctx = formal.getCtx();
 		var name = ctx.name;
-		var id   = formal.getId();
+		var id = formal.getId();
 		var type = formal.getType();
 
 		var symbol = new IdSymbol(name.getText());
@@ -266,11 +273,6 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 					"Method " + currentScope.toString() + " of class " + currentScope.getParent().toString() + " has formal parameter " + name.getText() + " with illegal type SELF_TYPE");
 		}
 
-//		if (SymbolTable.globals.lookup(n.type) == null) {
-//			SymbolTable.error(n.ctx, n.ctx.typeName, "Method " + ((MethodSymbol) currentScope).getName() + " of class " + ((ClassSymbol) ((MethodSymbol) currentScope).parent).getName() + " has formal parameter " + n.id + " with undefined type " + n.type);
-//			return;
-//		}
-
 		// Verificăm dacă parametrul deja există în scope-ul curent.
 		if (! currentScope.add(symbol)) {
 			SymbolTable.error(ctx, name,
@@ -281,15 +283,6 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		symbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
 		id.setSymbol(symbol);
 		id.setScope(currentScope);
-
-		// TODO 1: Reținem informația de tip în simbolul nou creat.
-		// Căutăm tipul variabilei.
-		// Semnalăm eroare dacă nu există.
-//		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
-//			ASTVisitor.error(type.getToken(),
-//					id.getToken().getText() + " does not exist");
-//			return null;
-//		}
 
 		// Reținem informația de tip în cadrul simbolului aferent
 		// variabilei.
@@ -330,12 +323,12 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		// TODO 1: Reținem informația de tip în simbolul nou creat.
 		// Căutăm tipul funcției.
 		// Semnalăm eroare dacă nu există.
-		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
+//		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
 //			ASTVisitor.error(type.getToken(),
 //					id.getToken().getText() + " does not exist");
 
-			return null;
-		}
+//			return null;
+//		}
 
 		// Reținem informația de tip în cadrul simbolului aferent funcției.
 		id.getSymbol().setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
@@ -352,8 +345,8 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Id id) {
-//		var symbol = (IdSymbol)currentScope.lookup(id.getToken().getText());
-		var symbol = new IdSymbol(id.getToken().getText());
+		var symbol = (IdSymbol)currentScope.lookup(id.getToken().getText());
+//		var symbol = new IdSymbol(id.getToken().getText());
 		if (currentScope.lookup(id.getToken().getText()) != null) {
 			symbol.setType(((IdSymbol) currentScope.lookup(id.getToken().getText())).getType());
 		}
@@ -407,16 +400,6 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		id.setSymbol(varDefSymbol);
 		id.setScope(currentScope);
 
-		// TODO 1: Reținem informația de tip în simbolul nou creat.
-		// Căutăm tipul variabilei.
-		// Semnalăm eroare dacă nu există.
-//		if (Objects.isNull(currentScope.lookup(type.getToken().getText()))) {
-//			SymbolTable.error(ctx, type.getToken(),
-//					"Class " + currentScope.toString() + " has attribute " + name.getText()
-//							+ " with undefined type " + type.getToken().getText());
-//			return null;
-//		}
-
 		// Reținem informația de tip în cadrul simbolului aferent
 		// variabilei
 		varDefSymbol.setType((TypeSymbol) currentScope.lookup(type.getToken().getText()));
@@ -440,5 +423,4 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 		whilee.getBody().accept(this);
 		return null;
 	}
-
 }

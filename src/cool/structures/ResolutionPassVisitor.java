@@ -56,39 +56,51 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		var id = letVar.getId();
 		var type = letVar.getType();
 
-//		if (id.getScope() != null) {
-//			if (SymbolTable.globals.lookup(type.getToken().getText()) == null) {
-//				SymbolTable.error(ctx, type.getToken(),
-//						"Let variable " + ctx.name.getText() + " has undefined type " + type.getToken().getText());
-//				return null;
-//			}
-//
-////			id.getSymbol().setType((TypeSymbol) id.getScope().lookup(type.getToken().getText()));
-//		}
+		if (id.getScope() != null) {
+			if (SymbolTable.globals.lookup(type.getToken().getText()) == null) {
+				SymbolTable.error(ctx, type.getToken(),
+						"Let variable " + ctx.name.getText() + " has undefined type " + type.getToken().getText());
+				return null;
+			}
 
-//		if (letVar.getInit() != null) {
-//			if (letVar.getInit() instanceof Int) {
-//				return TypeSymbol.INT;
-//			}
-//
-//			if (letVar.getInit() instanceof Bool) {
-//				return TypeSymbol.BOOL;
-//			}
-//
-//			if (letVar.getInit() instanceof Stringg) {
-//				return TypeSymbol.STRING;
-//			}
-//
-//			if (letVar.getId().getScope() != null && letVar.getId().getScope().lookup(letVar.getInit().getToken().getText()) != null) {
-//				return ((IdSymbol) letVar.getId().getScope().lookup(letVar.getInit().getToken().getText())).getType();
-//			}
-//		}
+			id.getSymbol().setType((TypeSymbol) id.getScope().lookup(type.getToken().getText()));
+//			id.getScope().add(id.getSymbol());
 
-		if (letVar.getInit() != null) {
-			letVar.getInit().accept(this);
 		}
 
-		return null;
+		TypeSymbol idType = null;
+		var typeA = SymbolTable.globals.lookup(letVar.getType().getToken().getText());
+		if (typeA instanceof ClassSymbol) {
+			idType = ((ClassSymbol) typeA).getType();
+		} else if (typeA instanceof TypeSymbol) {
+			idType = (TypeSymbol) typeA;
+		}
+
+		if (letVar.getInit() == null) {
+			return idType;
+		}
+
+		// hack2
+		var initType = letVar.getInit().accept(this);
+
+		// TODO 5: Verificăm dacă expresia cu care se realizează atribuirea
+		// are tipul potrivit cu cel declarat pentru variabilă.
+		if (initType == null) {
+//			ASTVisitor.error(assign.expr.getToken(),
+//					" Assignment with incompatible types " + idType.getName() + " NULL");
+			return null;
+		}
+
+		if (idType != null && (!idType.getName().equals(initType.getName()) && !SymbolTable.isInheritedClass(initType, idType))) {
+			SymbolTable.error(letVar.getCtx(), letVar.getInit().getToken(),
+					"Type " + initType.getName() + " of initialization expression of identifier "
+							+ letVar.getId().getToken().getText() + " is incompatible with declared type " + idType.getName());
+//			return null;
+		}
+
+
+
+		return idType;
 	}
 
 	@Override
@@ -178,12 +190,16 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 	@Override
 	public TypeSymbol visit(Let let) {
 		for (var letVar : let.getLetVars()) {
+			// hack
+//			if (letVar.getId().getScope() != null) {
+//				letVar.getId().setScope(letVar.getId().getScope().getParent());
+//			}
 			letVar.accept(this);
 		}
 
-		let.getBody().accept(this);
+		return let.getBody().accept(this);
 
-		return null;
+//		return null;
 	}
 
 	@Override
@@ -203,6 +219,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 //					" Assignment with incompatible types " + idType.getName() + " NULL");
 			return null;
 		}
+
 
 		if (!idType.getName().equals(exprType.getName()) && !SymbolTable.isInheritedClass(exprType, idType)) {
 			SymbolTable.error(assign.getCtx(), assign.getValue().getToken(),
@@ -357,21 +374,19 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			return null;
 		}
 
-		if (id.getSymbol().getName().equals("true") || id.getSymbol().getName().equals("false")) {
+		if (id.getToken().getText().equals("true") || id.getToken().getText().equals("false")) {
 			return TypeSymbol.BOOL;
 		}
 
-		var symbol = id.getScope().lookup(id.getToken().getText());
-		if (id.getSymbol() != null) {
-			id.getScope().add(id.getSymbol());
-		}
-
+		var	symbol = id.getScope().lookup(id.getToken().getText());
 		if (symbol == null) {
+//				|| ((DefaultScope) id.getScope().getParent()).getSymbols().isEmpty()) {
 			if (id.getCtx() != null) {
 				SymbolTable.error(id.getCtx(), id.getToken(), "Undefined identifier " + id.getToken().getText());
 			}
 			return null;
 		}
+//		id.getScope().add(symbol);
 
 		// TODO 2: Întoarcem informația de tip salvată deja în simbol încă de la
 		// definirea variabilei.
@@ -379,7 +394,11 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 //			return id.getSymbol().getType();
 //		}
 
-		return ((IdSymbol) symbol).getType();
+		if (symbol == null) {
+			return null;
+		} else {
+			return ((IdSymbol) symbol).getType();
+		}
 //		return null;
 	}
 
@@ -425,7 +444,22 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 			param.accept(this);
 		}
 
-		funcDef.getBody().accept(this);
+		var bodyType = funcDef.getBody().accept(this);
+
+		TypeSymbol idType = null;
+		var typeA = SymbolTable.globals.lookup(type.getToken().getText());
+		if (typeA instanceof ClassSymbol) {
+			idType = ((ClassSymbol) typeA).getType();
+		} else if (typeA instanceof TypeSymbol) {
+			idType = (TypeSymbol) typeA;
+		}
+
+		if (type != null && !type.getToken().getText().equals("Object") && bodyType != null && !type.getToken().getText().equals(bodyType.getName())
+		&& idType != null && !SymbolTable.isInheritedClass(bodyType, idType)) {
+			SymbolTable.error(ctx, funcDef.getBody().getToken(),
+					"Type " + bodyType.getName() + " of the body of method " + id.getToken().getText()
+							+ " is incompatible with declared return type " + type.getToken().getText());
+		}
 
 		return null;
 	}
@@ -462,9 +496,6 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		} else {
 			return SymbolTable.getMostInheritedClass(caseTypesList);
 		}
-
-//		return null;
-//		return TypeSymbol.OBJECT;
 	}
 
 	@Override
@@ -516,9 +547,22 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		}
 		if (varDef.getInit() != null) {
 			var varType = varDef.getInit().accept(this);
-//			id.getSymbol().setType(varType);
-		}
+			TypeSymbol idType = null;
 
+			var typeA = SymbolTable.globals.lookup(type.getToken().getText());
+			if (typeA instanceof ClassSymbol) {
+				idType = ((ClassSymbol) typeA).getType();
+			} else if (typeA instanceof TypeSymbol) {
+				idType = (TypeSymbol) typeA;
+			}
+
+			if (type != null && !type.getToken().getText().equals("Object") && varType != null && !type.getToken().getText().equals(varType.getName())
+					&& idType != null && !SymbolTable.isInheritedClass(varType, idType)) {
+				SymbolTable.error(ctx, varDef.getInit().getToken(),
+						"Type " + varType.getName() + " of initialization expression of attribute " + id.getToken().getText()
+								+ " is incompatible with declared type " + type.getToken().getText());
+			}
+		}
 		return null;
 	}
 
