@@ -156,6 +156,10 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Call call) {
+		for (var arg : call.getArgs()) {
+			arg.accept(this);
+		}
+
 		return null;
 	}
 
@@ -176,6 +180,12 @@ public class DefinitionPassVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(Dispatch dispatch) {
+		dispatch.getE().accept(this);
+
+		for (var arg : dispatch.getArgs()) {
+			arg.accept(this);
+		}
+
 		return null;
 	}
 

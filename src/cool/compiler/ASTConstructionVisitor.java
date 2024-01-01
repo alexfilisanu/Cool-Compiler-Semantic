@@ -32,7 +32,7 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitCall(CoolParser.CallContext ctx) {
-		return new Call(ctx.name,
+		return new Call(ctx,
 				ctx.expr().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
 	}
 
@@ -60,9 +60,9 @@ public class ASTConstructionVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitDispatch(CoolParser.DispatchContext ctx) {
-		return new Dispatch(ctx.name,
+		return new Dispatch(ctx,
 				(Expression)visit(ctx.e),
-				ctx.type,
+				new Type(ctx.type),
 				ctx.expr().stream().map(x -> (Expression) visit(x)).collect(Collectors.toList()));
 	}
 

@@ -5,8 +5,10 @@ import cool.compiler.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
@@ -57,7 +59,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		var type = letVar.getType();
 
 		if (id.getScope() != null) {
-			if (SymbolTable.globals.lookup(type.getToken().getText()) == null) {
+			if (SymbolTable.globals.lookup(type.getToken().getText()) == null && !type.getToken().getText().equals("SELF_TYPE")) {
 				SymbolTable.error(ctx, type.getToken(),
 						"Let variable " + ctx.name.getText() + " has undefined type " + type.getToken().getText());
 				return null;
@@ -222,10 +224,15 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 
 		if (!idType.getName().equals(exprType.getName()) && !SymbolTable.isInheritedClass(exprType, idType)) {
-			SymbolTable.error(assign.getCtx(), assign.getValue().getToken(),
-					"Type " + exprType.getName() + " of assigned expression is incompatible with declared type "
-							+ idType.getName() + " of identifier " + assign.getId().getToken().getText());
-//			return null;
+			if (assign.getValue() instanceof Dispatch) {
+				SymbolTable.error(assign.getCtx(), ((Dispatch) assign.getValue()).getCtx().start,
+						"Type " + exprType.getName() + " of assigned expression is incompatible with declared type "
+								+ idType.getName() + " of identifier " + assign.getId().getToken().getText());
+			} else {
+				SymbolTable.error(assign.getCtx(), assign.getValue().getToken(),
+						"Type " + exprType.getName() + " of assigned expression is incompatible with declared type "
+								+ idType.getName() + " of identifier " + assign.getId().getToken().getText());
+			}
 		}
 
 		return idType;
@@ -253,6 +260,9 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		TypeSymbol type = null;
 		for (var expr : block.getExprs()) {
 			type = expr.accept(this);
+			if (expr instanceof Assign) {
+				type = null;
+			}
 		}
 
 		return type;
@@ -466,6 +476,145 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Dispatch dispatch) {
+		var ctx = dispatch.getCtx();
+
+		if (dispatch.getType().getToken() != null) {
+			if ("SELF_TYPE".equals(dispatch.getType().getToken().getText())) {
+				SymbolTable.error(ctx, dispatch.getType().getToken(),
+						"Type of static dispatch cannot be SELF_TYPE");
+				return null;
+			}
+
+			if (SymbolTable.globals.lookup(dispatch.getType().getToken().getText()) == null) {
+				SymbolTable.error(ctx, dispatch.getType().getToken(),
+						"Type " + dispatch.getType().getToken().getText() + " of static dispatch is undefined");
+				return null;
+			}
+
+			TypeSymbol idType = null;
+			var typeA = SymbolTable.globals.lookup(dispatch.getType().getToken().getText());
+			if (typeA instanceof ClassSymbol) {
+				idType = ((ClassSymbol) typeA).getType();
+			} else if (typeA instanceof TypeSymbol) {
+				idType = (TypeSymbol) typeA;
+			}
+
+			if (!SymbolTable.isInheritedClass(((Id) dispatch.getE()).getSymbol().getType(), idType)) {
+				SymbolTable.error(ctx, dispatch.getType().getToken(),
+					"Type " + idType + " of static dispatch is not a superclass of type "
+							+ ((Id) dispatch.getE()).getSymbol().getType().getName());
+			}
+
+			if (SymbolTable.isUndefinedMethod(idType, dispatch.getToken().getText())) {
+				SymbolTable.error(ctx, dispatch.getToken(),
+						"Undefined method " + dispatch.getToken().getText() + " in class " + idType.getName());
+				return null;
+			}
+		}
+
+		if (dispatch.getToken().getText().equals("copy")) {
+			return TypeSymbol.SELF_TYPE;
+		}
+
+		if (dispatch.getToken().getText().equals("out_string")) {
+			return TypeSymbol.STRING;
+		}
+
+		if (dispatch.getToken().getText().equals("out_int")) {
+			return TypeSymbol.INT;
+		}
+
+		if (dispatch.getToken().getText().equals("in_string")) {
+			return TypeSymbol.STRING;
+		}
+
+		if (dispatch.getToken().getText().equals("in_int")) {
+			return TypeSymbol.INT;
+		}
+
+		if (dispatch.getToken().getText().equals("length")) {
+			return TypeSymbol.INT;
+		}
+
+		if (dispatch.getToken().getText().equals("concat")) {
+			for (var arg : dispatch.getArgs()) {
+				var typeArg = ((IdSymbol)(((Id) dispatch.getE()).getScope().lookup(arg.getToken().getText()))).getType();
+				if (typeArg != TypeSymbol.STRING) {
+					SymbolTable.error(ctx, arg.getToken(),
+							"In call to method concat of class String, actual type " + typeArg.getName()
+									+ " of formal parameter s is incompatible with declared type String");
+				}
+			}
+			return TypeSymbol.STRING;
+		}
+
+		if (dispatch.getToken().getText().equals("substr")) {
+			var typeArg = ((IdSymbol)(((Id) dispatch.getE()).getScope().lookup(dispatch.getArgs().getFirst().getToken().getText()))).getType();
+			if (typeArg != TypeSymbol.STRING) {
+				SymbolTable.error(ctx, dispatch.getArgs().getFirst().getToken(),
+						"In call to method substr of class String, actual type " + typeArg.getName()
+							+ " of formal parameter s is incompatible with declared type String");
+			}
+
+			for (var arg : dispatch.getArgs().subList(1, dispatch.getArgs().size())) {
+				typeArg = ((IdSymbol)(((Id) dispatch.getE()).getScope().lookup(arg.getToken().getText()))).getType();
+				if (typeArg != TypeSymbol.INT) {
+					SymbolTable.error(ctx, arg.getToken(),
+							"In call to method substr of class String, actual type " + typeArg.getName()
+								+ " of formal parameter l is incompatible with declared type Int");
+				}
+			}
+			return TypeSymbol.STRING;
+		}
+
+		var eType = dispatch.getE().accept(this);
+		if (eType == null && (dispatch.getE().getToken() != null && "self".equals(dispatch.getE().getToken().getText()))) {
+			if (((Id) dispatch.getE()).getScope().getParent() instanceof ClassSymbol) {
+				eType = ((ClassSymbol) ((Id) dispatch.getE()).getScope().getParent()).getType();
+			}
+		}
+
+		if (eType != null) {
+			if (SymbolTable.globals.lookup(eType.getName()) == null) {
+				SymbolTable.error(ctx, dispatch.getE().getToken(),
+						"Dispatch on undefined class " + eType.getName());
+				return null;
+			}
+
+			if (SymbolTable.isUndefinedMethod(eType, dispatch.getToken().getText())) {
+				SymbolTable.error(ctx, dispatch.getToken(),
+						"Undefined method " + dispatch.getToken().getText() + " in class " + eType.getName());
+				return null;
+			}
+
+			if (!((FunctionSymbol) SymbolTable.globals.lookup(eType.getName())).symbols.isEmpty()
+					&& ((ClassSymbol) SymbolTable.globals.lookup(eType.getName())).symbols.get(dispatch.getToken().getText()) != null
+					&& dispatch.getArgs().size() - 1 != ((FunctionSymbol)((ClassSymbol) SymbolTable.globals.lookup(eType.getName())).symbols.get(dispatch.getToken().getText())).symbols.size()) {
+				SymbolTable.error(ctx, dispatch.getToken(),
+						"Method " + dispatch.getToken().getText() + " of class " + SymbolTable.globals.lookup(eType.getName())
+							+ " is applied to wrong number of arguments");
+				return null;
+			}
+
+			List<TypeSymbol> list1 = dispatch.getArgs().subList(1, dispatch.getArgs().size()).stream()
+					.map(x -> x.accept(this))
+					.toList();
+			Object[] result = SymbolTable.isCallingMethodWithDifferentTypeOfFormals(list1, eType.getName(), dispatch.getToken().getText());
+			if ((boolean)result[0]) {
+				var pos = (int)result[3];
+				SymbolTable.error(ctx, dispatch.getArgs().get(pos + 1).getToken(),
+					"In call to method " + dispatch.getToken().getText() + " of class " + SymbolTable.globals.lookup(eType.getName())
+						+ ", actual type " + list1.get(pos).getName() + " of formal parameter " + result[1]
+						+ " is incompatible with declared type " + result[2]);
+			}
+
+			if (dispatch.getE() instanceof Id) {
+				if (((Id) dispatch.getE()).getScope() instanceof FunctionSymbol) {
+					return ((FunctionSymbol) ((Id) dispatch.getE()).getScope()).getType();
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -500,7 +649,31 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(Call call) {
-		return null;
+        if ("abort".equals(call.getToken().getText())) {
+			return TypeSymbol.OBJECT;
+		} else {
+			List<TypeSymbol> list1 = call.getArgs().stream()
+					.map(x -> x.accept(this))
+					.toList();
+
+			if (!call.getArgs().isEmpty()) {
+				Object[] result = SymbolTable.isCallingMethodWithDifferentTypeOfFormals(list1, ((ClassSymbol) (FunctionSymbol) ((Id) call.getArgs().getFirst()).getScope().getParent()).getType().getName(), call.getToken().getText());
+				if ((boolean) result[0]) {
+					var pos = (int) result[3];
+					SymbolTable.error(call.getCtx(), call.getArgs().get(pos).getToken(),
+							"In call to method " + call.getToken().getText() + " of class " + ((ClassSymbol) (FunctionSymbol) ((Id) call.getArgs().getFirst()).getScope().getParent()).getType().getName()
+									+ ", actual type " + list1.get(pos).getName() + " of formal parameter " + result[1]
+									+ " is incompatible with declared type " + result[2]);
+				}
+
+				if (call.getArgs().getFirst() instanceof Id) {
+					if (((Id) call.getArgs().getFirst()).getScope() instanceof FunctionSymbol) {
+						return ((FunctionSymbol) ((Id) call.getArgs().getFirst()).getScope()).getType();
+					}
+				}
+			}
+			return null;
+		}
 	}
 
 	@Override
@@ -510,12 +683,11 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 	@Override
 	public TypeSymbol visit(While whilee) {
-		var ctx = whilee.getCtx();
 		var condType = whilee.getCond().accept(this);
-		var bodyType = whilee.getBody().accept(this);
 
 		if (condType != TypeSymbol.BOOL) {
-			SymbolTable.error(ctx, whilee.getCond().getToken(), "While condition has type " + condType.getName() + " instead of Bool");
+			SymbolTable.error(whilee.getCtx(), whilee.getCond().getToken(),
+					"While condition has type " + condType.getName() + " instead of Bool");
 		}
 
 		return TypeSymbol.OBJECT;
@@ -558,9 +730,15 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 
 			if (type != null && !type.getToken().getText().equals("Object") && varType != null && !type.getToken().getText().equals(varType.getName())
 					&& idType != null && !SymbolTable.isInheritedClass(varType, idType)) {
-				SymbolTable.error(ctx, varDef.getInit().getToken(),
-						"Type " + varType.getName() + " of initialization expression of attribute " + id.getToken().getText()
-								+ " is incompatible with declared type " + type.getToken().getText());
+				if (varDef.getInit() instanceof Dispatch) {
+					SymbolTable.error(ctx, ((Dispatch) varDef.getInit()).getCtx().start,
+							"Type " + varType.getName() + " of initialization expression of attribute " + id.getToken().getText()
+									+ " is incompatible with declared type " + type.getToken().getText());
+				} else {
+					SymbolTable.error(ctx, varDef.getInit().getToken(),
+							"Type " + varType.getName() + " of initialization expression of attribute " + id.getToken().getText()
+									+ " is incompatible with declared type " + type.getToken().getText());
+				}
 			}
 		}
 		return null;

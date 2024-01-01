@@ -53,7 +53,7 @@ public class PrintVisitor implements ASTVisitor<Void> {
 
 		indent++;
 		printIndent(call.getToken().getText());
-		call.args.forEach(x -> x.accept(this));
+		call.getArgs().forEach(x -> x.accept(this));
 		indent--;
 
 		return null;
@@ -106,13 +106,13 @@ public class PrintVisitor implements ASTVisitor<Void> {
 		printIndent(".");
 
 		indent++;
-		dispatch.e.accept(this);
-		if (Objects.nonNull(dispatch.type)) {
-			printIndent(dispatch.type.getText());
+		dispatch.getE().accept(this);
+		if (Objects.nonNull(dispatch.getType().getToken())) {
+			printIndent(dispatch.getType().getToken().getText());
 		}
 		printIndent(dispatch.getToken().getText());
 		// sublist(1,) because e(first element of args) is already accepted before
-		dispatch.args.subList(1, dispatch.args.size())
+		dispatch.getArgs().subList(1, dispatch.getArgs().size())
 				.forEach(x -> x.accept(this));
 		indent--;
 
