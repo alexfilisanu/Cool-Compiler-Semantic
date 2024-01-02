@@ -15,7 +15,6 @@ public class DefaultScope implements Scope {
 
     @Override
     public boolean add(Symbol sym) {
-        // Reject duplicates in the same scope.
         if (symbols.containsKey(sym.getName()))
             return false;
         
@@ -38,26 +37,6 @@ public class DefaultScope implements Scope {
     }
 
     @Override
-    public Symbol lookupLetVar(String name) {
-        Map<String, Symbol> modifiedMap = new LinkedHashMap<>(symbols);
-//        if (modifiedMap.size() > 1) {
-//            modifiedMap.remove(modifiedMap.keySet().iterator().next());
-//        }
-
-        // Perform the lookup on the modified map
-        var sym = modifiedMap.get(name);
-
-        if (sym != null)
-            return sym;
-
-        // If the symbol is not found in the modified map, check the parent
-        if (parent != null)
-            return parent.lookup(name);
-
-        return null;
-    }
-
-    @Override
     public Scope getParent() {
         return parent;
     }
@@ -65,9 +44,5 @@ public class DefaultScope implements Scope {
     @Override
     public String toString() {
         return symbols.values().toString();
-    }
-
-    public Map<String, Symbol> getSymbols() {
-        return symbols;
     }
 }
