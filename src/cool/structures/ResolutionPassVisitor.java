@@ -291,7 +291,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 					.toList();
 
 			if (!args.isEmpty()) {
-				var className = ((ClassSymbol) ((Id) args.getFirst()).getScope().getParent()).getType().getName();
+				var className = ((ClassSymbol) ((Id) args.get(0)).getScope().getParent()).getType().getName();
 				Object[] result = SymbolTable.isCallingMethodWithDifferentTypeOfFormals(symbolList, className, call.getToken().getText());
 				if ((boolean) result[0]) {
 					var pos = (int) result[3];
@@ -301,7 +301,7 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 									+ " is incompatible with declared type " + result[2]);
 				}
 
-				return ((FunctionSymbol) ((Id) args.getFirst()).getScope()).getType();
+				return ((FunctionSymbol) ((Id) args.get(0)).getScope()).getType();
 			}
 
 			return null;
@@ -496,9 +496,9 @@ public class ResolutionPassVisitor implements ASTVisitor<TypeSymbol> {
 		}
 
 		if (dispatch.getToken().getText().equals("substr")) {
-			var typeArg = ((IdSymbol)(((Id) dispatch.getE()).getScope().lookup(dispatch.getArgs().getFirst().getToken().getText()))).getType();
+			var typeArg = ((IdSymbol)(((Id) dispatch.getE()).getScope().lookup(dispatch.getArgs().get(0).getToken().getText()))).getType();
 			if (typeArg != TypeSymbol.STRING) {
-				SymbolTable.error(ctx, dispatch.getArgs().getFirst().getToken(),
+				SymbolTable.error(ctx, dispatch.getArgs().get(0).getToken(),
 						"In call to method substr of class String, actual type " + typeArg.getName()
 							+ " of formal parameter s is incompatible with declared type String");
 			}

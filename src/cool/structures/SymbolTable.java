@@ -238,7 +238,7 @@ public class SymbolTable {
 
     public static TypeSymbol getMostInheritedClass(ArrayList<TypeSymbol> typesList) {
         var types = new ArrayList<>(typesList);
-        var current = types.getFirst();
+        var current = types.get(0);
 
         for (int i = 1; i < types.size(); i++) {
             if (isInheritedClass(current, types.get(i))) {
