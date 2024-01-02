@@ -2,14 +2,13 @@ package cool.structures;
 
 import cool.compiler.Compiler;
 import cool.compiler.Id;
+import cool.compiler.Type;
 import cool.parser.CoolParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SymbolTable {
     public static Scope globals;
@@ -58,6 +57,12 @@ public class SymbolTable {
         semanticErrors = true;
     }
 
+    public static boolean isPrimitiveType(TypeSymbol typeSymbol) {
+        return typeSymbol == TypeSymbol.INT
+                || typeSymbol == TypeSymbol.STRING
+                || typeSymbol == TypeSymbol.BOOL;
+    }
+
     public static boolean isIllegalParent(Token parent) {
         return parent.getText().equals("Int")
                 || parent.getText().equals("String")
@@ -65,8 +70,8 @@ public class SymbolTable {
                 || parent.getText().equals("SELF_TYPE");
     }
 
-    public static boolean isUndefinedParent(Token parent) {
-        return globals.lookup(parent.getText()) == null;
+    public static boolean isUndefinedToken(Token token) {
+        return globals.lookup(token.getText()) == null;
     }
 
     public static boolean isInheritanceCycle(Token child) {
@@ -111,6 +116,18 @@ public class SymbolTable {
 
         return false;
     }
+
+    public static TypeSymbol getTypeSymbol(Type type) {
+        var typeGlobal = SymbolTable.globals.lookup(type.getToken().getText());
+        if (typeGlobal instanceof ClassSymbol) {
+            return ((ClassSymbol) typeGlobal).getType();
+        } else if (typeGlobal instanceof TypeSymbol) {
+            return (TypeSymbol) typeGlobal;
+        }
+
+        return null;
+    }
+
 
     public static boolean isOverridingMethodWithDifferentNumberOfFormals(Id id) {
         var scope = id.getScope();
@@ -212,6 +229,11 @@ public class SymbolTable {
         }
 
         return false;
+    }
+
+    public static boolean areIncompatibleTypes(TypeSymbol parentType, TypeSymbol childType) {
+        return !parentType.getName().equals(childType.getName())
+                && !SymbolTable.isInheritedClass(childType, parentType);
     }
 
     public static TypeSymbol getMostInheritedClass(ArrayList<TypeSymbol> typesList) {
