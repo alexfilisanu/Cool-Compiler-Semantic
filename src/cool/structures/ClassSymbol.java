@@ -1,11 +1,9 @@
 package cool.structures;
 
 public class ClassSymbol extends FunctionSymbol {
-	public DefaultScope vars;
 
 	public ClassSymbol(String name, Scope parent) {
 		super(name, parent);
-		this.vars = new DefaultScope(parent);
 	}
 
 	@Override

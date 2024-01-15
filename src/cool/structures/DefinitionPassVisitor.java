@@ -2,8 +2,6 @@ package cool.structures;
 
 import cool.compiler.*;
 
-import java.util.Objects;
-
 public class DefinitionPassVisitor implements ASTVisitor<Void> {
 	Scope currentScope = null;
 
